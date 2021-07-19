@@ -35,24 +35,19 @@ int dijkstra(int start, int dest)
     // 탐색 가능한 에지가 존재할 때
     while (!q.empty())
     {
-        // 비용이 가장 작은 에지를 q에서 제거
+        // 비용이 가장 작은 에지 e를 q에서 제거
         edge e = q.top();
         q.pop();
-
-        // 기존 비용과 에지의 비용을 비교해 더 작은 쪽으로 통일
-        set_min(e._cost, costs[e._node]);
-
-        // 에지와 연결된 노드의 모든 에지에 대해
-        // 기존 최소값을 갱신할 수 있는 노드가 있다면
-        for (edge e_ : graph[e._node])
-            if (costs[e_._node] > e._cost + e_._cost)
-            {
-                // 에지의 값을 갱신될 최소값으로 바꾼 뒤 최소값을 갱신
-                e_._cost += e._cost;
-                costs[e_._node] = e_._cost;
-                // 에지를 q에 push
-                q.push(e_);
-            }
+        
+        // e를 이용했을 때 비용을 줄일 수 있다면
+        if (costs[e._node] > e._cost)
+        {
+            // 비용을 e를 이용한 비용으로 갱신한 뒤
+            costs[e._node] = e._cost;
+            // e를 이용한 뒤의 경우를 q에 push
+            for (auto ed : graph[e._node])
+                q.push({costs[e._node] + ed._cost, ed._node});
+        }
     }
 
     // start 노드에서 dest 노드까지의 최소 비용을 반환
