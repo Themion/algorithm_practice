@@ -3,7 +3,7 @@
 
 using namespace std;
 
-#define MAX 1000001
+#define MAX 1000000
 
 // step[i]: N에서 1로 만들 때 i바로 이전 순서의 수
 int step[MAX + 1] = { 0, 1, };
