@@ -22,17 +22,20 @@ que unsorted_q, q;
 stk s, s_;
 
 // 컨테이너 cont를 to에 push
-void push(container cont, auto &to) {
+template <typename T>
+void push(container cont, T &to) {
     to.push(cont);
     ans += cont._weight;
 }
 // 큐 from에서 컨테이너 하나를 to에 push
-void move(que &from, auto &to) {
+template <typename T>
+void move(que &from, T &to) {
     push(from.front(), to);
     from.pop();
 }
 // 스택 from에서 컨테이너 하나를 to에 push
-void move(stk &from, auto &to) {
+template <typename T>
+void move(stk &from, T &to) {
     push(from.top(), to);
     from.pop();
 }

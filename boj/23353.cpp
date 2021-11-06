@@ -3,6 +3,7 @@
 
 using namespace std;
 
+
 // 각 백돌의 좌표 (y, x)를 pair로 저장해 큐에 push
 typedef pair<int, int> coord;
 typedef queue<coord> que;
@@ -22,13 +23,15 @@ typedef queue<coord> que;
 //2: 기울기 1 대각
 //3: 기울기 -1 대각
 
+int N, ans = 0;
+int add[4][2] = { {1, 0}, {0, 1}, {1, 1}, {1, -1} };
 // board: 냥목 게임판
 // score[dir][y][x]: 게임판에서 좌표 (y, x)를 포함한 dir 방향의 연속된 흑돌의 길이
-int N, board[MAX_N][MAX_N], score[4][MAX_N][MAX_N];
-int add[4][2] = { {1, 0}, {0, 1}, {1, 1}, {1, -1} };
+short board[MAX_N][MAX_N], score[4][MAX_N][MAX_N];
 
 // a와 b 중 더 큰 값을 a에 저장
-void set_max(int& a, int b) { a = a > b ? a : b; }
+template <typename T1, typename T2>
+void set_max(T1 &a, T2 b) { a = a > b ? a : b; }
 
 // 좌표 (y, x)가 바둑판 위에 존재한다면 true, 아니라면 false
 bool is_valid(int y, int x) { return y >= 0 && y < N&& x >= 0 && x < N; }
@@ -48,18 +51,20 @@ int set_score(int dir, int y, int x) {
         if (NOW && is_valid(y + dY, x + dX))
             set_max(NOW, set_score(dir, y + dY, x + dX));
     }
+    // 이전에 계산한 흑돌의 길이와 현재 흑돌의 길이를 비교
+    set_max(ans, NOW);
     // 계산된 흑돌의 길이를 반환
     return NOW;
 }
 
 int main() {
-    int y, x, ans = 0;
+    int y, x;
     que q;
 
     // 게임판의 상태를 입력받으면서 백돌의 좌표를 q에 push
     scanf("%d", &N);
     for (y = 0; y < N; y++) for (x = 0; x < N; x++) {
-        scanf("%d", &(board[y][x]));
+        scanf("%hd", &(board[y][x]));
         if (board[y][x] == 2) q.push({ y, x });
     }
 
@@ -71,22 +76,22 @@ int main() {
     }
 
     for (int i = 0; i < N; i++) {
-        // 가로 및 세로 연속값을 계산한 뒤 최댓값을 갱신
+        // 가로 및 세로 연속값을 계산
         for (int j = 1; j < N; j++) {
-            set_max(ans, set_score(0, j, i));
-            set_max(ans, set_score(1, i, j));
+            set_score(0, j, i);
+            set_score(1, i, j);
         }
 
-        // 기울기가 1인 흑돌의 연속값을 계산한 뒤 최댓값을 갱신
+        // 기울기가 1인 흑돌의 연속값을 계산
         for (int j = 1; i + j < N; j++) {
-            set_max(ans, set_score(2, i + j, j));
-            set_max(ans, set_score(2, j, i + j));
+            set_score(2, i + j, j);
+            set_score(2, j, i + j);
         }
 
-        // 기울기가 -1인 흑돌의 연속값을 계산한 뒤 최댓값을 갱신
+        // 기울기가 -1인 흑돌의 연속값을 계산
         for (int j = 1; j <= N - 1 - i; j++) {
-            set_max(ans, set_score(3, j, N - 1 - i - j));
-            set_max(ans, set_score(3, i + j, N - 1 - j));
+            set_score(3, j, N - 1 - i - j);
+            set_score(3, i + j, N - 1 - j);
         }
     }
 
