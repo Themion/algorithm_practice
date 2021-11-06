@@ -89,7 +89,7 @@ int main() {
         }
 
         // 기울기가 -1인 흑돌의 연속값을 계산
-        for (int j = 1; j <= N - 1 - i; j++) {
+        for (int j = 1; i + j < N; j++) {
             set_score(3, j, N - 1 - i - j);
             set_score(3, i + j, N - 1 - j);
         }
