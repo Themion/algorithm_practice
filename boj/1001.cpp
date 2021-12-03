@@ -1,8 +1,6 @@
 #include <cstdio>
 
-int main()
-{
-	//a, b, 를 저장할 공간
+int main() {
 	int a, b;
 	//a와 b를 입력받는다
 	scanf("%d %d", &a, &b);
