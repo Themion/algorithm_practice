@@ -1,33 +1,29 @@
 #include <cstdio>
 
-int tri[31][31];
+#define MAX_N 30
+#define FOR(i, a, b) for(i = a; i < b; i++)
 
-int main()
-{
-    //tc: 테스트 케이스의 수
-    //n, k: 파스칼의 삼각형으로 다리의 수를 구한다
-	int tc, n, k;
+// tri[N][K]: 파스칼의 삼각형을 이용해 NCK를 계산
+int tri[MAX_N + 1][MAX_N + 1];
 
-    //테스트 케이스를 입력받은 뒤
-	scanf("%d", &tc);
-    //각 테스트 케이스마다
-    while(tc--)
-    {
-        //컴비네이션을 구할 n과 k를 구한다
-        scanf("%d %d", &k, &n);
-
-        //n^2시간에 컴비네이션을 구한다
-        for (int i = 1; i <= n; i++)
-        {
-            tri[i][0] = 1;
-            tri[i][i] = 1;
-
-            for (int j = 1; j < i; j++)
-                tri[i][j] = tri[i - 1][j - 1] + tri[i - 1][j];
-        }
-
+int main() {
+    // T: 테스트 케이스의 수
+    // N, M: 각각 서쪽, 동쪽의 사이트의 개수
+	int T, N, M, n, k;
+    
+    FOR(n, 0, MAX_N) {
+        // 이전 값을 탐색할 수 없는 nC0은 하드 코딩으로 초기화
+        tri[n][0] = 1;
+        // nCk = (n - 1)C(k - 1) + (N - 1)Ck
+        FOR(k, 1, n) tri[n][k] = tri[n - 1][k - 1] + tri[n - 1][k];
+    }
+    
+	scanf("%d", &T);
+    while(T--) {
+        //컴비네이션을 구할 N과 M을 입력받은 뒤
+        scanf("%d %d", &N, &M);
         //해당 테스트 케이스의 컴비네이선을 출력한다
-        printf("%d\n", tri[n][k]);
+        printf("%d\n", tri[M][N]);
     }
 
 	return 0;

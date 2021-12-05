@@ -1,59 +1,55 @@
 #include <cstdio>
 
-int w, h;
-bool field[50][50];
+#define MAX 50
 
-//양배추가 상하좌우로 있는지 찾기 위해 bfs를 사용
-void bfs(int x, int y)
+int M, N;
+bool field[MAX][MAX];
+
+// 양배추 군집의 모든 양배추를 찾기 위해 dfs 사용
+bool dfs(int y, int x)
 {
+    // 현재 위치의 양배추를 탐색한 뒤
     field[y][x] = false;
 
-    if((x - 1 >= 0) && field[y][x - 1]) bfs(x - 1, y);
-    if((y - 1 >= 0) && field[y - 1][x]) bfs(x, y - 1);
-    if((x + 1 < w) && field[y][x + 1]) bfs(x + 1, y);
-    if((y + 1 < h) && field[y + 1][x]) bfs(x, y + 1);
+    // 인접한 곳에 양배추가 있다면 재귀를 통해 탐색
+    if((x - 1 >= 0) && field[y][x - 1]) dfs(y, x - 1);
+    if((y - 1 >= 0) && field[y - 1][x]) dfs(y - 1, x);
+    if((x + 1 < M) && field[y][x + 1]) dfs(y, x + 1);
+    if((y + 1 < N) && field[y + 1][x]) dfs(y + 1, x);
+
+    // 군집 탐색을 완료했으므로 true 반환
+    return true;
 }
 
-//길이가 너무 길어져 따로 나눔
-int find_num(int cnt)
+// 각 테스트 케이스를 실행할 함수
+int test_case(int K)
 {
-    //x, y: 밭의 각 칸을 지정할 인덱스
-    //ret: 출력할 값
-    int x, y, ret = 0;
+    // X, Y: 밭의 각 칸을 지정할 인덱스, ret: 양배추 군집의 수
+    int X, Y, ret = 0;
 
-    //심은 양배추의 수만큼 양배추의 위치를 입력받는다
-    while (cnt--)
-    {
-        scanf("%d %d", &x, &y);
-        field[y][x] = true;
+    // 심은 양배추의 수만큼 양배추의 위치를 입력받아 희소행렬 꼴로 저장
+    while (K--) {
+        scanf("%d %d", &X, &Y);
+        field[Y][X] = true;
     }
 
-    //모든 칸을 찾아보면서 해당 칸에 양배추가 있다면
-    for (int i = 0; i < w; i++)
-        for (int j = 0; j < h; j++)
-            if (field[j][i])
-            {
-                //bfs를 통해 양배추 그룹을 찾아낸다
-                bfs(i, j);
-                //그룹 하나당 벌레 하나가 필요하다
-                ret++;
-            }
+    //모든 칸을 찾아보면서 해당 칸에 양배추가 있다면 깊이 우선 탐색을 실행
+    for (Y = 0; Y < N; Y++) for (X = 0; X < M; X++)
+        if (field[Y][X]) ret += dfs(Y, X);
 
+	// 양배추 군집의 수를 반환
     return ret;
 }
 
-int main()
-{
-    //tc: 테스트 케이스의 수
-    //cnt: 양배추의 수
-    int tc, cnt;
+int main() {
+    // T: 테스트 케이스의 수, K: 양배추의 수
+    int T, K;
 
-    //테스트 케이스의 수를 입력받은 뒤
-    scanf("%d", &tc);
-    while(tc--)
-    {
-        scanf("%d %d %d", &w, &h, &cnt);
-        printf("%d\n", find_num(cnt));
+    // 테스트 케이스의 수를 입력받은 뒤
+    scanf("%d", &T);
+    while(T--) {
+        scanf("%d %d %d", &M, &N, &K);
+        printf("%d\n", test_case(K));
     }
 
     return 0;

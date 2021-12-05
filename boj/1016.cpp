@@ -1,8 +1,10 @@
 #include <cmath>
 #include <cstdio>
 
+#define MAX_IDX 1000000
+
 //해당 인덱스의 수가 제곱ㄴㄴ 수라면 false, 아니라면 true
-bool str[1000001];
+bool str[MAX_IDX + 1];
 
 int main()
 {

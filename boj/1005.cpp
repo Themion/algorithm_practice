@@ -1,71 +1,65 @@
 #include <algorithm>
-#include <cstdio>
-#include <vector>
+#include <iostream>
 
 using namespace std;
 
-typedef long long ll;
+#define MAX_N 1000 + 1
+#define len(node) graph[node][0]
 
-//t[k]: k번쨰 건물을 짓는 데 걸리는 시간
-int t[1000];
-//time[k]: k번째 건물을 짓는 데 걸리는 총 최소 시간
-vector<ll> time;
-//ord[a]: a번째 건물을 짓기 위해 필요한 건물의 집합
-vector<vector<int>> ord;
+// graph[i][j]: j == 0: graph[i]를 짓기 위한 건물의 수 
+//              j != 0: graph[i]를 짓기 위한 j번째 건물
+short graph[MAX_N][MAX_N];
+// N: 건물의 수, D[i]: i번째 건물의 건설 시간
+int N, D[MAX_N];
 
-//time[idx]를 함수를 이용해 접근한다
-ll getTime(int idx)
-{
-    //time[idx]를 매번 배열에서 접근하면 시간이 너무 오래 걸리므로
-    //레퍼런스를 이용해 접근 시간을 줄인다
-    ll &ret = time[idx];
+int max(int a, int b) { return a > b ? a : b; }
 
-    //time[idx]가 초기값이라면
-    if (ret == -1)
-    {
-        //ret을 0으로 초기화한 뒤
-        ret = 0;
-        //idx번째 건물을 짓기 위한 모든 건물에 대해 
-        //각각 총 최소 시간 중 가장 큰 값을 ret에 대입한 뒤
-        if (ord[idx].size() != 0) for (auto i : ord[idx])
-                ret = max(ret, getTime(i));
-        //time[idx]에 idx번째 건물을 짓는 시간을 더한다
-        ret += t[idx];
+// node번째 건물을 짓기 위해 걸리는 총 시간을 계산
+int dfs(int node) {
+    // node번째 건물을 짓기 위한 선행 건물이 남아있다면
+    if (len(node)) {
+        int pre = 0;
+        // 모든 선행 건물을 짓기 위한 총 시간을 계산한 뒤
+        while (len(node)) pre = max(pre, dfs(graph[node][len(node)--]));
+        // 연산 시간을 최소화하기 위해 node번째 건물의 건설 시간을 배열에 저장
+        D[node] += pre;
     }
-
-    //ret을 반환한다
-    return ret;
+    // node번째 건물을 짓기 위해 걸리는 총 시간을 반환
+    return D[node];
 }
 
-int main()
-{
-    //tc: 테스트 케이스의 수
-    //N: 각 테스트 케이스에서 건물의 수, K: 각 테스트 케이스에서 규칙의 수
-    //X, Y: Y 건물을 짓기 위해서는 X 건물을 먼저 지어야 한다
-    //W: 짓고자 하는 건물의 번호
-    int tc, N, K, X, Y, W;
+int test_case() {
+    // K: 건물의 선행 건설 관계의 수
+    // X, Y: 건물 Y를 짓기 위해선 건물 X를 먼저 지어야 함
+    // W: 건설하고자 하는 건물
+    int K, X, Y, W;
+    cin >> N >> K;
 
-    scanf("%d", &tc);
-    while (tc--)
-    {
-        //N과 K를 입력받고 거기에 맞춰 time과 ord를 초기화한다
-        scanf("%d %d", &N, &K);
-        time = vector<ll>(N, -1);
-        ord = vector<vector<int>>(N);
-
-        //t와 ord를 입력받은 뒤
-        for (int i = 0; i < N; i++) scanf("%d", &t[i]);
-        for (int i = 0; i < K; i++)
-        {
-            scanf("%d %d", &X, &Y);
-            ord[Y - 1].push_back(X - 1);
-        }
-
-        //W를 입력받아
-        scanf("%d", &W);
-        //W를 짓는 데까지 걸리는 시간을 getTime을 이용해 구한다
-        printf("%lld\n", getTime(W - 1));
+    // 각 건물의 건설 시간을 입력받으며 선행 건설 관계를 초기화
+    for (int i = 1; i <= N; i++) {
+        cin >> D[i];
+        graph[i][0] = 0;
     }
+    // 선행 건설 관계를 입력받는다
+    while (K--) {
+        cin >> X >> Y;
+        graph[Y][++graph[Y][0]] = X;
+    }
+    // 최종적으로 건설하고자 하는 건물을 입력받는다
+    cin >> W;
+    // 건물 W를 짓기 위해 걸리는 총 시간을 반환
+    return dfs(W);
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+	cout.tie(NULL);
+
+    int T;
+    cin >> T;
+    // 각 테스트 케이스에 대해 정답을 출력한다
+    while (T--) cout << test_case() << '\n';
 
     return 0;
 }
