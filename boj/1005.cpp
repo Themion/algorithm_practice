@@ -3,7 +3,7 @@
 
 using namespace std;
 
-#define MAX_N 1000 + 1
+#define MAX_N 1'000 + 1
 #define len(node) graph[node][0]
 
 // graph[i][j]: j == 0: graph[i]를 짓기 위한 건물의 수 
@@ -54,7 +54,7 @@ int test_case() {
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(NULL);
-	cout.tie(NULL);
+    cout.tie(NULL);
 
     int T;
     cin >> T;

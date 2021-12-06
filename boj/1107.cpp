@@ -1,116 +1,45 @@
 #include <cstdio>
 
-int abs(int a) { return a > 0 ? a : -a; }
+#define MAX_CHN 500'000
 
-//(인덱스)번 버튼이 고장났다면 true, 아니라면 false
+int abs(int a) { return a >= 0 ? a : -a; }
+int min(int a, int b) { return a < b ? a : b; }
+
+// broken[i]: 버튼 i가 고장났다면 true
 bool broken[10];
+// N: 타겟 채널, ans: 채널 N으로 이동하는 최소 비용
+int N, ans = MAX_CHN;
 
-int main()
-{
-	//m, p: target보다 (m: 작은, p: 높은) 수에서 target까지 도달할 수 있다면 true, 아니라면 false
-	bool m = false, p = false;
+// 0번 채널로 이동한 것이 아닐 경우
+// 버튼을 t번 눌러 현재 채널 K로 이동했을 때 최소 비용을 계산
+void brute_force(int K, int t) {
+    // 현재 채널에서 채널 N으로의 비용을 기존 최소 비용과 비교
+    ans = min(abs(N - K) + t, ans);
+    // 현재 채널이 목표 채널보다 크거나 같을 경우 더 버튼을 누를 필요 없다
+    if (K >= N) return;
+    // 현재 채널에서 숫자 버튼을 추가로 눌러
+    // 다른 채널로 이동했을 때의 최소 비용을 기존 최소 비용과 비교
+    for (int i = 0; i < 10; i++) if (!broken[i]) brute_force(K * 10 + i, t + 1);
+}
 
-	//target: 이동하고자 하는 채널 번호
-	//cnt[i]: target보다 (i==false: 작은, true: 높은) 수와 target의 차
-	//mns, pls: 입력할 숫자. 입력할 숫자 중 입력이 가능하고
-	//			target과 가장 가까운 수를 찾는다
-	//rank: mns, pls를 구할 때 사용할 변수
-	int target, cnt[2] = { 0x3f3f3f3f, 0x3f3f3f3f }, mns, pls, rank;
+int main() {
+    // M: 고장난 버튼의 수, buf: 고장난 버튼을 입력받을 버튼
+    int M, buf;
+    // 문제 조건을 입력받는다
+    scanf("%d %d", &N, &M);
+    while (M--) {
+        // 누를 수 없는 버튼을 broke에서 제거
+        scanf("%d", &buf);
+        broken[buf] = true;
+    }
 
-	//이동할 채널과 고장난 버튼 수, 고장난 버튼을 입력받는다
-	scanf("%d\n%d", &target, &rank);
-	for (int i = 0; i < rank; i++)
-	{
-		scanf("%d", &mns);
-		broken[mns] = true;
-	}
-
-	//m: 0번부터 9번까지 전부 입력할 수 없다면 false
-	//p: 1번부터 9번까지 전부 입력할 수 없다면 false
-	m = !broken[0];
-	for (rank = 1; rank <= 9; rank++) if (!broken[rank]) { m = true; p = true; break; }
-
-	//target부터 1씩 빼 가면서 mns가 입력 가능한 수인지 판단한다
-	if (m)
-	{
-		//mns를 target부터 시작해서
-		mns = target; rank = 1;
-
-		//mns가 0 이상일 때 1의 자리 수부터 각 자리수에 대해
-		while ((mns >= 0) && (mns / rank > 0))
-		{
-			//어느 자리의 수가 불가능한 수일 때
-			if (broken[(mns / rank) % 10])
-			{
-				//mns를 1 뺀 뒤 1의 자리 수부터 다시 계산
-				rank = 1;
-				mns -= 1;
-			}
-			//어느 자리의 수가 가능한 수일 때 다음 자리 수를 확인한다
-			else rank *= 10;
-		}
-
-		//mns 채널에서 target까지 이동할 때 +버튼을 (target - mns)번 눌러야 한다
-		cnt[0] = target - mns;
-		//mns가 0일 때 예외처리
-		if (mns == 0)
-		{
-			//버튼은 항상 한 번 이상 눌린다
-			cnt[0] += 1;
-			//mns가 0일 때 0번 버튼을 누를 수 없다면 mns는 항상 불가능하다
-			if (broken[0]) cnt[0] = 1000000;
-		}
-
-		//mns채널로 이동할 때 누르는 버튼 수를 계산
-		while (mns > 0)
-		{
-			cnt[0] += 1;
-			mns /= 10;
-		}
-	}
-
-	//target부터 1씩 더해 가면서 pls가 입력 가능한 수인지 판단한다
-	if (p)
-	{
-		//pls를 target부터 시작해서
-		pls = target; rank = 1;
-
-		//pls의 1의 자리 수부터 각 자리수에 대해
-		while (pls / rank > 0)
-		{
-			//어느 자리의 수가 불가능한 수일 때
-			if (broken[(pls / rank) % 10])
-			{
-				//pls를 1 더한 뒤 1의 자리 수부터 다시 계산
-				rank = 1;
-				pls += 1;
-			}
-			//어느 자리의 수가 가능한 수일 때 다음 자리 수를 확인한다
-			else rank *= 10;
-		}
-
-		//pls 채널에서 target까지 이동할 때 -버튼을 (pls - target)번 눌러야 한다
-		cnt[1] = pls - target;
-		//pls는 항상 target보다 크거나 같으므로 pls가 0일 때 예외처리가 필요하다
-		//0 이외의 버튼 중 유효한 버튼이 하나 이상 있으므로 해당 버튼 중 가장 작은 번호를 가진 버튼을 찾는다
-		if (cnt[1] == 0) while (broken[cnt[1]++]);
-
-		//pls 채널로 이동할 때 누르는 버튼 수를 계산
-		while (pls > 0)
-		{
-			cnt[1] += 1;
-			pls /= 10;
-		}
-	}
-
-	//mns 채널에서 이동할 때와 pls 채널에서 이동할 때 누르는 횟수 중 작은 수를 택한다
-	if (cnt[0] > cnt[1]) cnt[0] = cnt[1];
-	//어느 채널로 이동한 뒤 한 채널씩 이동하는 방법과
-	//100 채널에서 한 채널씩 이동하는 방법 중 버튼을 누르는 횟수가 적은 방법을 택한다
-	if (cnt[0] > abs(target - 100)) cnt[0] = abs(target - 100);
-
-	//버튼을 누르는 가장 적은 횟수를 출력한다
-	printf("%d\n", cnt[0]);
+    // 0번 채널은 재귀로 돌리지 않고 따로 계산
+    if (!broken[0]) ans = min(ans, N + 1);
+    // 1번 채널부터 가능한 모든 채널에 대해 최소 비용을 계산
+    for (int i = 1; i < 10; i++) if (!broken[i]) brute_force(i, 1);
+    // 현재 채널에서 이전/다음 채널 버튼만 눌렀을 때의 최소 비용과
+    // 브루트포스로 계산한 최소 비용을 비교해 더 작은 값을 출력
+    printf("%d\n", min(ans, abs(N - 100)));
 
     return 0;
 }

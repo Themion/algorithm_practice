@@ -6,8 +6,7 @@ int M, N;
 bool field[MAX][MAX];
 
 // 양배추 군집의 모든 양배추를 찾기 위해 dfs 사용
-bool dfs(int y, int x)
-{
+bool dfs(int y, int x) {
     // 현재 위치의 양배추를 탐색한 뒤
     field[y][x] = false;
 
@@ -22,8 +21,7 @@ bool dfs(int y, int x)
 }
 
 // 각 테스트 케이스를 실행할 함수
-int test_case(int K)
-{
+int test_case(int K) {
     // X, Y: 밭의 각 칸을 지정할 인덱스, ret: 양배추 군집의 수
     int X, Y, ret = 0;
 

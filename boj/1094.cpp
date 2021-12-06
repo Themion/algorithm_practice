@@ -1,24 +1,12 @@
 #include <cstdio>
 
-int main()
-{
-    //x: 만들고자 하는 막대의 길이
-    //i: 현재 만들 수 있는 토막 중 가장 긴 토막의 길이
-    //ret: 길이 x의 막대를 만들 때 필요한 토막의 수
-    int x, i, ret = 0;
+int main() {
+    int x, ans = 0;
     scanf("%d", &x);
+    // x를 2진법으로 나타내면 어떤 토막이 필요한지 알 수 있다.
+    for (int i = 1; i <= 64; i *= 2) ans += (x & i) == i;
 
-    while(x)
-    {
-        //현재 만들 수 있는 토막 중 가장 긴 토막을 만든다
-        for (i = 1; i <= x; i *= 2);
-        //for문을 벗어날 때 i는 반드시 x보다 크다
-        x -= i / 2;
-        //토막을 하나 만들었다
-        ret++;
-    }
-
-    printf("%d\n", ret);
+    printf("%d\n", ans);
 
     return 0;
 }

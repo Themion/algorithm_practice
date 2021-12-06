@@ -18,7 +18,7 @@ int main() {
     scanf("%d", &N);
     for (int i = 0; i < 6; i++) scanf("%d", side + i);
     // N > 1이면 각 정육면체에서 사용되는 면은 최대 3개이다
-	
+
     if (N > 1) {
         // 서로 마주한 면들 중 값이 더 작은 면만 사용
         for (int i = 0; i < 3; i++) side[i] = min(side[i], side[5 - i]);

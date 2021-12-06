@@ -17,26 +17,23 @@ int test_case() {
     plus = r1 + r2; minus = abs(r1 - r2);
     // 둘의 거리를 계산
     d = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
-	
+
     // 둘의 거리와 둘이 계산한 거리에 따라 원의 위치 관계를 측정한다
     if (x1 == x2 && y1 == y2 && r1 == r2) ret = -1;
     else if (d > plus || d < minus) ret = 0;
     else if (d == plus || d == minus) ret = 1;
     else if (d < plus && d > minus) ret = 2;
 
-	// 측정한 위치 관계를 반환
+    // 측정한 위치 관계를 반환
     return ret;
 }
 
-int main()
-{
-	int times;
-
-	// 테스트 케이스의 수를 입력받는다
-	scanf("%d", &times);
-
-	// times만큼 테스트 케이스를 반복
-	while (times--) printf("%d\n", test_case());
+int main() {
+    int T;
+    // 테스트 케이스의 수를 입력받는다
+    scanf("%d", &T);
+    // T만큼 테스트 케이스를 반복
+    while (T--) printf("%d\n", test_case());
 
     return 0;
 }

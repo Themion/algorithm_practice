@@ -6,7 +6,7 @@ int test_case(int dist) {
     // times: 공간 이동을 한 횟수, jump: 공간 이동을 할 거리
     int times = 0, jump = 1;
 
-    // 아직 점프할 거리가 남아있을 때
+    // 아직 목적지까지의 거리가 남아있을 때
     while (dist > 0) {
         // 거리 jump만큼 공간이동을 한 뒤
         dist -= jump;
@@ -19,22 +19,23 @@ int test_case(int dist) {
         times++;
     }
 
+    // 각 공간 이동을 적절히 재배치한 뒤 
+    // 마지막 공간 이동의 거리를 적절히 재배치하면 최적해가 된다
     // 공간 이동을 한 횟수를 반환
     return times;
 }
 
-int main()
-{
-	// T: 테스트 케이스의 수, x, y: 시작점과 끝점의 좌표
-	int T, x, y;
+int main() {
+    // T: 테스트 케이스의 수, x, y: 시작점과 끝점의 좌표
+    int T, x, y;
 
-	scanf("%d", &T);
-	// 각 테스트 케이스마다
-	while (T--) {
-		// 시작점과 끝점을 입력받고 그 차만큼 이동할 때 걸리는 시간을 출력
-		scanf("%d %d", &x, &y);
-		printf("%d\n", test_case(y - x));
-	}
+    scanf("%d", &T);
+    // 각 테스트 케이스마다
+    while (T--) {
+        // 시작점과 끝점을 입력받고 그 차만큼 이동할 때 걸리는 시간을 출력
+        scanf("%d %d", &x, &y);
+        printf("%d\n", test_case(y - x));
+    }
 
-	return 0;
+    return 0;
 }

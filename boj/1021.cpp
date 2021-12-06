@@ -20,7 +20,7 @@ int main() {
     while (M--) {
         // 2번 연산의 횟수 초기화
         k = 0;
-	    scanf("%d", &buf);
+        scanf("%d", &buf);
 
         // 제거할 원소를 찾을 때까지 2번 연산을 k번 반복
         while (q.front() != buf) {
