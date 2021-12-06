@@ -1,40 +1,41 @@
 #include <cstdio>
 
+#define MAX 0x3f3f3f3f
+
+int min(int a, int b) { return a < b ? a : b; }
+
 int main()
 {
-    //n, m: 끊어진 기타줄의 수와 기타줄 브랜드의 수
-    //pack, one: 각 브랜드의 기타줄 팩과 낱개의 값
-    //p_m, o_m: pack과 one의 최솟값
-    //price: 기타줄 팩만 사는 경우와 낱개만 사는 경우,
-    //       팩으로 6개씩 산 뒤 나머지를 낱개로 사는 경우를 각각 저장
-    //ret: price의 최솟값을 저장할 공간
-    int n, m, pack, one, p_m = 10000, o_m = 10000, price[3], ret = 100000;
+    // N: 끊어진 기타줄의 수, M: 기타줄 브랜드의 수, buf: 각 가격을 입력받을 버퍼
+    // pack, one: 각 브랜드의 기타줄 팩과 낱개의 최소 가격
+    // price: 기타줄 팩만 사는 경우와 낱개만 사는 경우,
+    //        팩으로 6개씩 산 뒤 나머지를 낱개로 사는 경우
+    // ans: price의 최솟값을 저장할 공간
+    int N, M, buf, pack = MAX, one = MAX, price[3], ans = MAX;
 
-    //끊어진 기타줄 수와 기타줄 브랜드의 수를 입력받은 뒤
-    scanf("%d %d", &n, &m);
-    //각 기타줄 브랜드에 대해
-    while(m--)
-    {
-        //기타줄 팩과 낱개의 값을 입력받고
-        scanf("%d %d", &pack, &one);
+    // 끊어진 기타줄 수와 기타줄 브랜드의 수를 입력받은 뒤
+    scanf("%d %d", &N, &M);
+    // 각 기타줄 브랜드에 대해
+    while(M--) {
+        // 기타줄 팩과 낱개의 값의 최솟값을 저장
+        scanf("%d", &buf);
+        pack = min(pack, buf);
 
-        //이 값을 최솟값과 비교해 더 작은 값을 최솟값으로 정한다
-        p_m = p_m < pack ? p_m : pack;
-        o_m = o_m < one ? o_m : one;
+        scanf("%d", &buf);
+        one = min(one, buf);
     }
 
-    //기타줄 팩만 사는 경우와 낱개만 사는 경우,
-    //팩으로 6개씩 산 뒤 나머지를 낱개로 사는 경우를 각각 저장
-    price[0] = p_m * (n / 6 + (n % 6 != 0));
-    price[1] = o_m * n;
-    price[2] = p_m * (n / 6) + o_m * (n % 6);
+    // 기타줄 팩만 사는 경우와 낱개만 사는 경우,
+    // 팩으로 6개씩 산 뒤 나머지를 낱개로 사는 경우를 각각 저장
+    price[0] = pack * (N / 6 + (N % 6 != 0));
+    price[1] = one * N;
+    price[2] = pack * (N / 6) + one * (N % 6);
 
-    //price의 최솟값을 ret에 저장한다
-    for (int i = 0; i < 3; i++)
-        ret = (ret < price[i] ? ret : price[i]);
+    // price의 최솟값을 ans에 저장한다
+    for (int i = 0; i < 3; i++) ans = min(ans, price[i]);
 
-    //기타줄을 사는 최소 비용을 출력한다
-    printf("%d\n", ret);
+    // 기타줄을 사는 최소 비용을 출력한다
+    printf("%d\n", ans);
 
     return 0;
 }

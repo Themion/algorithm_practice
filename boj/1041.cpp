@@ -1,61 +1,53 @@
 #include <algorithm>
 #include <cstdio>
 
-int main()
-{
-	//N : 만들 정육면체의 한 변의 길이
-	//front, left, up : 서로 마주보고 있는 두 면. 이 두 면은 N != 1일 때 동시에 존재할 수 없다
-	int N, front[2], left[2], up[2];
+using namespace std;
 
-	//정육면체를 만들었을 때 각 면의 가중치의 합
-	long long ret = 0, temp;
+typedef long long ll;
 
-	//N과 기본 정육면체를 입력받는다
-	scanf("%d", &N);
-	scanf("%d %d %d %d %d %d", &front[0], &left[0], &up[0], &up[1], &left[1], &front[1]);
+int min(int a, int b) { return a < b ? a : b; }
+int max(int a, int b) { return a > b ? a : b; }
 
-	//N > 1이면 각 정육면체에서 사용되는 면은 최대 3개이다
-	if (N > 1)
-	{
-		std::sort(front, front + 2);
-		std::sort(left, left + 2);
-		std::sort(up, up + 2);
+int main() {
+    // N : 만들 정육면체의 한 변의 길이, side: 각 면의 값
+    int N, side[6];
+    //정육면체를 만들었을 때 각 면의 가중치의 합
+    ll ans = 0;
 
-		//서로 마주한 면들 중 더 작은 면만 사용
-		long long cube[3] = { front[0], left[0], up[0] };
-		//세 면을 오름차순으로 정렬
-		std::sort(cube, cube + 3);
+    //N과 기본 정육면체를 입력받는다
+    scanf("%d", &N);
+    for (int i = 0; i < 6; i++) scanf("%d", side + i);
+    // N > 1이면 각 정육면체에서 사용되는 면은 최대 3개이다
+	
+    if (N > 1) {
+        // 서로 마주한 면들 중 값이 더 작은 면만 사용
+        for (int i = 0; i < 3; i++) side[i] = min(side[i], side[5 - i]);
+        // 세 값을 오름차순으로 정렬
+        sort(side, side + 3);
 
-		//엣지와 코너를 제외한 다섯 면의 코어
-		temp = 5 * (long long)(N - 2) * (long long)(N - 2) * (long long)cube[0];
-		ret += temp;
-		//윗면과 옆면에 존재하는 여덟 엣지
-		temp = 8 * (long long)(N - 2) * (long long)(cube[0] + cube[1]);
-		ret += temp;
-		//윗쪽 네 코너
-		temp = 4 * (long long)(cube[0] + cube[1] + cube[2]);
-		ret += temp;
-		//밑면의 네 엣지
-		temp = 4 * (long long)(N - 2) * (long long)cube[0];
-		ret += temp;
-		//아랫쪽 네 코너
-		temp = 4 * (long long)(cube[0] + cube[1]);
-		ret += temp;
-	}
+        // 여섯 면의 점수를 모두 더한 뒤
+        ans += 6 * (ll)(N - 2) * (ll)(N - 2) * (ll)side[0];
+        ans += 12 * (ll)(N - 2) * (ll)(side[0] + side[1]);
+        ans += 8 * (ll)(side[0] + side[1] + side[2]);
+        // 밑면의 점수를 뺀다
+        ans -= (ll)(N - 2) * (ll)(N - 2) * (ll)side[0];
+        ans -= 4 * (ll)(N - 2) * (ll)side[1];
+        ans -= 4 * (ll)side[2];
+    }
 
-	//N == 1이면 가려지는 건 단 한 면 뿐
-	else
-	{
-		//모든 면을 cube에 저장한 뒤 cube를 오름차순으로 정렬해 가장 큰 면을 cube[5]에 저장
-		long long cube[6] = { front[0], left[0], up[0], front[1], left[1], up[1] };
-		std::sort(cube, cube + 6);
+    // N == 1이면 가려지는 건 단 한 면 뿐
+    else {
+        // ans에 모든 면의 값을 더하면서 가장 큰 면의 값을 N에 저장
+        for(int i = 0; i < 6; i++) {
+            ans += side[i];
+            N = max(N, side[i]);
+        }
+        // 모든 면의 값의 합에서 가장 큰 면의 값을 뺀다
+        ans -= N;
+    }
 
-		//cube[5]를 제외한 모든 면을 더해 ret에 저장
-		for(int i = 0; i < 5; i++) ret += cube[i];
-	}
-
-	//가중치의 합을 출력한다
-	printf("%lld\n", ret);
+    //가중치의 합을 출력한다
+    printf("%lld\n", ans);
 
     return 0;
 }

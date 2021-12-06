@@ -1,55 +1,43 @@
 #include <cstdio>
-#include <vector>
+#include <queue>
 
-int main()
-{
-    //size: 초기 큐의 크기, num: pop할 원소의 수
-    //fnd: 각 횟수마다 pop할 원소의 인덱스, ptr: 각 탐색을 시작할 지점
-    //ret: 각 탐색의 이동 시간을 전부 더해 저장할 공간
-    int size, num, fnd, ptr = 0, ret = 0;
-    //q: 큐를 저장할 컨테이너
-    std::vector<int> q;
+using namespace std;
 
-    //큐의 크기와 pop할 원소의 수를 입력받는다
-    scanf("%d %d", &size, &num);
+int min(int a, int b) { return a < b ? a : b; }
 
-    //주어진 정보에 따라 q를 초기화한다
-    q = std::vector<int>(size);
-    for (int i = 0; i < size; i++) q[i] = i + 1;
+int main() {
+    // N: 큐의 원소 개수, M: 1번 연산을 실행할 횟수
+    // buf: 큐에서 제거할 각 원소, k: 2번 연산의 실행 횟수
+    // ans: 주어진 경우에서 2번 연산, 혹은 3번 연산을 실행할 최소 횟수
+    int N, M, buf, k, ans = 0;
+    queue<int> q;
+    scanf("%d %d", &N, &M);
 
-    //각 pop할 원소마다
-    for (int i = 0; i < num; i++) 
-    {
-        //pop할 원소를 찾고
-        scanf("%d", &fnd);
+    // 큐에 원소를 1부터 N까지 채워넣는다
+    for (int i = 1; i <= N; i++) q.push(i);
 
-        //큐의 크기가 최대 50이므로 선형 탐색을 사용할 수 있다
-        for (int j = 0; j <= size; j++)
-        {
-            //ptr부터 한 칸씩 탐색하며 pop할 원소를 발견하면
-            //해당 지점을 ptr로 지정하고 원소를 pop한 뒤 이동한 횟수를 ret에 더한다
-            if (q[(ptr + j) % size] == fnd)
-            {
-                q.erase(q.begin() + (ptr + j) % size);
-                ptr = (ptr + j) % size;
-                ret += j;
-                break;
-            }
-            else if (q[(ptr - j + size) % size] == fnd)
-            {
-                q.erase(q.begin() + (ptr - j + size) % size);
-                ptr = (ptr - j + size) % size;
-                ret += j;
-                break;
-            }
+    // 각 1번 연산에 대해
+    while (M--) {
+        // 2번 연산의 횟수 초기화
+        k = 0;
+	    scanf("%d", &buf);
+
+        // 제거할 원소를 찾을 때까지 2번 연산을 k번 반복
+        while (q.front() != buf) {
+            q.push(q.front());
+            q.pop();
+            k++;
         }
-
-        //큐에서 원소를 pop했으므로 큐의 크기를 갱신한다
-        size = q.size();
+        // 1번 연산 실행
+        q.pop();
+        // 2번 연산을 k번 실행하는 것은 3번 연산을 N - k번 실행하는 것과 같으므로
+        // 2번 연산과 3번 연산 중 횟수가 더 적은 연산을 실행한 것으로 간주한다
+        ans += min(k, N - k);
+        N--;
     }
 
-    //총 이동 횟수를 출력한다
-    printf("%d\n", ret);
+    // 2번 연산과 3번 연산을 한 최소 횟수를 출력
+    printf("%d\n", ans);
 
     return 0;
 }

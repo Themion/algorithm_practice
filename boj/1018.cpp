@@ -1,51 +1,48 @@
 #include <cstdio>
 
-//[i][j] 칸이 검은 색이면 true, 아니라면 false
-bool board[50][50];
+#define MAX 50
 
-int main()
-{
-	//x,y : 판자의 사이즈, min : 칠해야 하는 최소 횟수
-	//res : 판자를 잘라낸 뒤 칠하는 횟수를 셀 때 쓸 변수
-	int x, y, min = 2500, res[2] = { 0 };
-	//입력을 버퍼를 통해 받는다
+// board[i][j]: (i, j) 칸이 검은 색이면 true, 아니라면 false
+bool board[MAX][MAX];
+
+int min(int a, int b) { return a < b ? a : b; }
+
+int brute_force(int y, int x) {
+    int paint[2] = { 0, 0 };
+
+    // 체스판의 i행 j열 칸의 색은 (i + j) % 2에 따라 결정된다
+    for (int i = 0; i < 8; i++) for (int j = 0; j < 8; j++) 
+        paint[board[y + i][x + j] == (i + j) % 2] += 1;
+
+    // 칠하는 두 방법 중 더 작은 방법을 기존 방법과 비교한다
+    return min(paint[0], paint[1]);
+}
+
+int main() {
+	// N, M: 판자의 사이즈, ans : 칠해야 하는 최소 횟수
+	// paint: 판자를 잘라낸 뒤 칠하는 횟수를 셀 때 쓸 변수
+	int N, M, ans = MAX * MAX, paint[2];
+	// 입력을 버퍼를 통해 받는다
 	char buf;
 
-	//판자의 크기와 칠해진 상태를 입력받는다
-	scanf("%d %d\n", &x, &y);
-	for (int i = 0; i < x; i++)
-	{
-		for (int j = 0; j < y; j++)
-		{
+	// 판자의 크기와 칠해진 상태를 입력받는다
+	scanf("%d %d\n", &N, &M);
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
 			scanf("%c", &buf);
-			if (buf == 'B') board[i][j] = true;
-			else board[i][j] = false;
+			board[i][j] = (buf == 'B');
 		}
-        //개행문자는 날린다
+        // 개행문자 입력 방지
 		scanf("%*c");
 	}
 
-	//판자가 8*8 크기가 될 수 있는 모든 경우에 대해
-	for (int xx = 0; xx <= x - 8; xx++) for (int yy = 0; yy <= y - 8; yy++)
-	{
-		//맨 처음은 칠하지 않은 상태이다
-		res[0] = 0; res[1] = 0;
+	// 판자가 8 * 8 크기가 될 수 있는 모든 경우에 대해 색을 칠하는 횟수를 계산
+    // 각 경우를 비교하여 최솟값을 ans에 저장한다
+	for (int y = 0; y <= N - 8; y++) for (int x = 0; x <= M - 8; x++) 
+        ans = min(ans, brute_force(y, x));
 
-		//판자를 흰검흰검...으로 칠하는 횟수와 검흰검흰... 으로 칠하는 횟수를 센다
-		for (int i = 0; i < 8; i++) for (int j = 0; j < 8; j++)
-		{
-			if (board[xx + i][yy + j] == (i + j) % 2) res[0] += 1;
-			else res[1] += 1;
-		}
-
-		//두 칠하는 횟수 중 더 작은 쪽을 res[0]에 저장한다
-		if (res[0] > res[1]) res[0] = res[1];
-		//min과 res[0]을 비교해 더 작은 쪽을 min에 저장한다
-		if (min > res[0]) min = res[0];
-	}
-
-	//min을 출력한다
-	printf("%d\n", min);
+	// 다시 칠해야 하는 정사각형 개수의 최솟값을 출력한다
+	printf("%d\n", ans);
 
     return 0;
 }
