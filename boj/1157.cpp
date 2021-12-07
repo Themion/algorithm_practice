@@ -1,47 +1,37 @@
 #include <cstdio>
 
-//times : 0부터 25까지는 해당 알파벳이 나온 횟수, 26은 big의 사용을 위해 0번 나온 알파벳으로 가정
-int times[27];
+#define MAX_LEN 1'000'000
 
-int main()
-{
-	//문자를 저장하는 버퍼
-	char buf;
+// 단어를 저장할 공간
+char str[MAX_LEN];
+// times[i]: i번째 알파벳의 등장 횟수
+int times[26];
 
-	//big : 가장 많이 나온 알파벳을 가리킴
-	//temp : buf가 무슨 알파벳인지 저장. 인덱스로만 쓰이는 것이 아니므로 변수로 생성
-	int big = 26, temp;
+int main() {
+    // idx: 단어의 각 글자를 인덱스로 바꾼 값
+    // most: 가장 많이 등장한 알파벳의 인덱스
+    int idx, most = 0;
 
-	//어떤 문자를 입력받을 때마다
-	while (scanf("%c", &buf) == 1)
-	{
-		//그 문자가 소문자인지, 대문자인지, 아니면 공백 문자인지 판정
-		if		((buf >= 'a') && (buf <= 'z'))	temp = (int)(buf - 'a');
-		else if ((buf >= 'A') && (buf <= 'Z'))	temp = (int)(buf - 'A');
-		else									break;
+    // 단어를 입력받은 뒤
+    scanf("%s", str);
+    // 단어의 각 글자에 대해
+    for (int i = 0; str[i]; i++) {
+        // 글자를 알파벳의 순서에 맞는 인덱스로 변경
+        idx = str[i] - ((str[i] >= 'a') && (str[i] <= 'z') ? 'a' : 'A');
+        // 각 알파벳의 등장 횟수와 가장 많이 등장한 알파벳을 차례로 갱신
+        times[idx] += 1;
+        if (times[most] < times[idx]) most = idx;
+    }
 
-		//해당 알파벳이 나온 횟수를 저장
-		times[temp] += 1;
-		//여태까지 나온 알파벳 중 가장 많이 나온 알파벳을 갱신
-		if (times[big] < times[temp]) big = temp;
-	}
+    // most만큼 등장한 알파벳이 most 외에 있다면 most를 ?로 갱신
+    for (int i = 0; i < 26; i++)
+        if (i != most && times[i] == times[most]) {
+            most = '?' - 'A';
+            break;
+        }
 
-	//가장 많이 나온 알파벳을 버퍼에 저장
-	buf = big + 'A';
-
-	//알파벳 big만큼 나온 알파벳이 또 있다면 버퍼에 '?'을 저장
-	for (int i = 0; i < 26; i++)
-	{
-		if (i == big) continue;
-		if (times[i] == times[big])
-		{
-			buf = '?';
-			break;
-		}
-	}
-
-	//버퍼를 출력한다
-	printf("%c\n", buf);
+    // 가장 많이 나온 알파벳을 출력
+    printf("%c\n", most + 'A');
 
     return 0;
 }

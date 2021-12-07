@@ -3,7 +3,7 @@
 #define MAX_N 30
 #define FOR(i, a, b) for(i = a; i < b; i++)
 
-// tri[N][K]: 파스칼의 삼각형을 이용해 NCK를 계산
+// tri[N][K]: 파스칼의 삼각형을 이용해 조합을 계산
 int tri[MAX_N + 1][MAX_N + 1];
 
 int main() {
@@ -19,10 +19,10 @@ int main() {
     }
 
     scanf("%d", &T);
-    while(T--) {
-        //컴비네이션을 구할 N과 M을 입력받은 뒤
+    while (T--) {
+        // 조합을 구할 N과 M을 입력받은 뒤
         scanf("%d %d", &N, &M);
-        //해당 테스트 케이스의 컴비네이선을 출력한다
+        // 해당 테스트 케이스의 컴비네이선을 출력한다
         printf("%d\n", tri[M][N]);
     }
 

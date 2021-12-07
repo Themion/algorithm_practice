@@ -16,7 +16,7 @@ int main()
     // 끊어진 기타줄 수와 기타줄 브랜드의 수를 입력받은 뒤
     scanf("%d %d", &N, &M);
     // 각 기타줄 브랜드에 대해
-    while(M--) {
+    while (M--) {
         // 기타줄 팩과 낱개의 값의 최솟값을 저장
         scanf("%d", &buf);
         pack = min(pack, buf);

@@ -17,7 +17,7 @@ int main() {
     sort(B, B + N);
     // A를 뒤집어서 B와 곱해 S에 저장한다
     for (int i = 0; i < N; i++) S += A[N - 1 - i] * B[i];
-    // 배열곱을 최소화한 값을 
+    // 배열곱을 최소화한 값을 출력
     printf("%d\n", S);
 
     return 0;
