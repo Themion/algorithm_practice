@@ -1,13 +1,13 @@
 #include <cstdio>
 
-typedef long long ull;
+typedef long long ll;
 
 // 손가락 일일히 세보기
 int manual[8] = {1, 2, 3, 4, 5, 4, 3, 2};
 // hurt: 다친 손가락, add_per_set: 손가락 한번에 8개씩 세기
 int hurt, add_per_set = 1;
 // cnt: 손가락으로 수 센 횟수, limit: 다친 손가락의 한계
-ull cnt = 0, limit;
+ll cnt = 0, limit;
 
 int main() {
     // 다친 손가락의 위치와 한계를 입력받은 뒤

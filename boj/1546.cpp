@@ -1,26 +1,22 @@
 #include <cstdio>
 
-int main()
-{
-    //input : 입력받은 점수를 저장할 공간
-	//rng: 입력받을 점수의 수, max: 최대 점수값
-	int input, rng, max = 0;
-	//답을 출력할 때 쓸 변수
-	double ret = 0;
+int main() {
+    // 답을 출력할 때 쓸 변수
+    double ans = 0;
+    // input: 입력받은 점수를 저장할 공간, N: 입력받을 점수의 수, M: 점수의 최댓값
+    int input, N, M = 0;
 
-	scanf("%d", &rng);
+    scanf("%d", &N);
 
-	//각 점수를 입력받은 뒤 ret에 더하고 가장 큰 점수를 max에 저장
-	for (int i = 0; i < rng; i++) 
-    {
+    // 각 점수를 입력받은 뒤 ans에 더하고 가장 큰 점수를 M에 저장
+    for (int i = 0; i < N; i++) {
         scanf("%d", &input);
-        ret += input;
-        if(max < input) max = input;
+        ans += input;
+        if (M < input) M = input;
     }
-	
-	//ret에 100을 곱한 뒤 (max * rng)만큼 나누어 새로운 평균을 출력한다
-	ret *= 100;
-	printf("%f\n", ret / (max * rng));
+
+    // ans에 100을 곱한 뒤 (M * N)만큼 나누어 새로운 평균을 출력한다
+    printf("%f\n", ans * 100 / (M * N));
 
     return 0;
 }

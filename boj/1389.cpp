@@ -1,71 +1,51 @@
 #include <cstdio>
 #include <queue>
 
-//n: 노드의 수, m: 에지의 수
-int n, m;
-//graph[0][i]: bfs 중 i번째 노드 방문 여부
-//grpah[i][j]: i와 j가 서로 아는 사이일 경우 true, 아니라면 false
-bool graph[101][101] = {{ false, }};
+using namespace std;
 
-int bfs(int start, int mid, int cnt, int& score)
-{
-    //bfs에 사용할 큐
-    std::queue<int> q;
-    //모든 노드에 대해
-    for (int i = 1; i <= n; i++)
-    {
-        //해당 노드가 루트 노드라면 continue
-        if (start == i) continue;
-        //노드 i가 탐색이 가능하고 방문한 적이 없다면
-        if (graph[mid][i] && !graph[0][i])
-        {
-            //노드를 방문한 뒤 score를 추가하고 큐에 push
-            graph[0][i] = true;
-            score += cnt + 1;
-            q.push(i);
+#define MAX_N 100
+#define FOR(i) for (i = 1; i <= N; i++)
+
+void set_min(short &a, short b) { a = a < b ? a : b; }
+
+int main() {
+    // N: 인물의 수, M: 관계의 수, A, B: 그래프를 입력받을 두 노드
+    // i, j, k: for문에 사용될 인덱스 변수
+    // sum: 각 인물의 관계 단계수의 합, min: 관계 단계수의 합의 최솟값
+    // ans: 관계 단계수의 합이 최소인 사람
+    int N, M, A, B, i, j, k, sum, min = MAX_N * MAX_N, ans = -1;
+    // graph[i][j]: i와 j의 관계 단계
+    short graph[MAX_N + 1][MAX_N + 1];
+
+    // 서로 모르는 사람의 관계 단계를 충분히 큰 값으로 설정
+    for (int i = 1; i <= MAX_N; i++) fill_n(graph[i], MAX_N + 1, MAX_N);
+    
+    // 문제 조건을 입력
+    scanf("%d %d", &N, &M);
+    while (M--) {
+        scanf("%d %d", &A, &B);
+        // 인물의 관계를 희소행렬 꼴로 저장
+        graph[A][B] = graph[B][A] = 1;
+    }
+
+    // 플로이드-와샬 공식 사용
+    FOR(k) FOR(i) FOR(j)
+        set_min(graph[i][j], graph[i][k] + graph[k][j]);
+
+    // 각 인물에 대해
+    FOR(i) {
+        // 관계 단계수의 합을 계산한 뒤
+        sum = 0;
+        FOR(j) sum += graph[i][j];
+        // 관계 단계수의 합이 가장 적은 사람을 갱신
+        if (min > sum) {
+            min = sum;
+            ans = i;
         }
     }
 
-    //큐에 존재하는 모든 노드에 대해 bfs를 실행
-    while(q.size())
-    {
-        bfs(start, q.front(), cnt + 1, score);
-        q.pop();
-    }
-
-    //bfs 이후 score를 반환한다
-    return score;
-}
-
-int main()
-{
-    //그래프를 입력할 때 사용할 버퍼
-    int a, b;
-    //score: 각 노드의 케빈-베이컨 점수, min: 가장 작은 score, ret: min을 가진 노드
-    int score, min = 0x3f3f3f3f, ret = -1;
-
-    scanf("%d %d", &n, &m);
-    while(m--) {
-        scanf("%d %d", &a, &b);
-        graph[a][b] = true;
-        graph[b][a] = true;
-    }
-
-    //모든 노드에 대해
-    for (int i = 1; i <= n; i++)
-    {
-        //방문 기록을 초기화한 뒤
-        for (auto &g: graph[0]) g = false;
-        //bfs 결과 score를 비교하여 min과 ret을 갱신한다
-        if (min > bfs(i, i, 0, score = 0))
-        {
-            min = score;
-            ret = i;
-        }
-    }
-
-    //가장 작은 케빈-베이컨 점수를 가진 노드를 출력
-    printf("%d\n", ret);
+    // 관계 단계수의 합이 가장 적은 사람을 출력
+    printf("%d\n", ans);
 
     return 0;
 }
