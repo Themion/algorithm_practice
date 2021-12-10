@@ -1,45 +1,43 @@
-#include <cstdio>
+#include <iostream>
 
-#define N_MAX 100000
-#define INF 0x3f3f3f3f
+using namespace std;
 
-int main()
-{
-    // N: 수열의 길이, S: 최소합의 크기, arr: 수열
-    int N, S, arr[N_MAX];
-    // l, r: 부분수열 합을 구하기 위한 두 인덱스
-    // ret: 부분합을 이루는 수열의 길이
-    // sum[i]: arr의 앞 i개 성분의 합
-    int l = 0, r = 1, ret = INF, sum[N_MAX + 1] = { 0, };
+#define MAX_N 100000
 
-    // 문제 조건을 입력받는다
-    scanf("%d %d", &N, &S);
-    for (int i = 0; i < N; i++) 
-    {
-        scanf("%d", arr + i);
-        sum[i + 1] = sum[i] + arr[i];
-    }
+int min(int a, int b) { return a < b ? a : b; }
 
-    // 투 포인터를 이용해 문제 해결
-    while (l < N)
-    {
-        // 부분합이 S 이상이라면
-        if (sum[r] - sum[l] >= S) 
-        {
-            // 부분합 수열의 길이가 줄었다면 ret을 갱신
-            if (ret > r - l && r != l) ret = r - l;
-            // 부분합의 왼쪽을 가능하면 한 칸 줄인다
-            if (l < N) l++;
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    // N: 배열의 길이, S: 목표 연속합의 최소 크기
+    // l, r: 투 포인터에 쓸 인덱스, sum: 투 포인터로 구한 연속합
+    // ans: 크기가 S 이상인 연속합의 최소 길이
+    int N, S, arr[MAX_N], l = 0, r = 1, sum, ans = MAX_N + 1;
+
+    // 문제의 조건을 입력받은 뒤
+    cin >> N >> S;
+    for (int i = 0; i < N; i++) cin >> arr[i];
+    // 연속합을 배열의 첫 성분으로 초기화
+    sum = arr[0];
+
+    // 투 포인터 실행
+    while (l < N) {
+        // 연속합이 S 미만이면서 더할 성분이 있다면 연속합 오른쪽의 성분을 더한다
+        if (sum < S && r < N) sum += arr[r++];
+        // 그렇지 않다면
+        else {
+            // 연속합이 S 이상일 때 연속합의 최소 길이를 갱신
+            if (sum >= S) ans = min(ans, r - l);
+            // 연속합의 맨 왼쪽 수를 제거
+            sum -= arr[l++];
         }
-        // 부분합이 S 미만이고 오른쪽에 성분이 더 있다면
-        // 오른쪽 성분도 부분합에 포함
-        else if (r < N) r++;
-        // 무한루프 방지
-        else break;
     }
     
     // 조건을 만족하는 부분합을 찾았다면 그 길이를, 아니라면 0을 출력
-    printf("%d\n", ret < INF ? ret : 0);
+    cout << (ans < MAX_N + 1 ? ans : 0) << '\n';
 
     return 0;
 }

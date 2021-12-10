@@ -12,7 +12,7 @@ string i2s[MAX_N];
 unordered_map<string, int> s2i;
 
 int main() {
-    // cin, cout 사용 시 필히 사용할 것
+    // 입출력 속도 향상
     ios::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);

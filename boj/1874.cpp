@@ -1,78 +1,54 @@
-#include <cstdio>
+#include <iostream>
 #include <stack>
 #include <queue>
 
 using namespace std;
 
-//만들고자 하는 수열
-int ans[100000];
+#define MAX_N 100000
 
-int main()
-{
-	//q와 s로 ret을 구현할 수 있다면 true
-	//그렇지 않다면 false
-	bool isCont = true;
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-	//size : 입력받을 수의 개수
-	//buf : 수열을 입력받을 때는 ans에 각 수를 전달하기 위한 버퍼
-	//		수열을 큐와 벡터로 구현할 때는 ans의 인덱스
-	int size, buf;
+    // n: 스택 수열의 길이, next: 스택에 넣을 다음 수
+    // arr[i]: 스택 수열의 i번째 성분, idx: arr에 접근하기 위한 인덱스
+    int n, next = 1, arr[MAX_N], idx = 0;
+    // 출력하기 위한 스택의 push / pop 로그
+    queue<char> log;
+    // 스택 수열을 저장하기 위한 스택
+    stack<int> s;
 
-	//s, q : 1~size가 저장된 큐 q에서 pop한 값을 스택 s에 push한다
-	//		 s를 push하거나 pop하면서 ans를 구현할 수 있는지 확인
-	//ret : s에 어떤 값을 push하면 '+'을, pop하면 -를 ret에 push
-	stack<int> s;
-	queue<int> q;
-	queue<char> ret;
+    // 문제의 조건을 입력받은 뒤
+    cin >> n;
+    for (int i = 0; i < n; i++) cin >> arr[i];
 
-	scanf("%d", &size);
+    // 스택에 빼거나 넣을 수 있는 수가 존재할 때
+    while (idx < n && next <= n) {
+        // 스택에 idx번재 스택 수열이 등장할 때까지
+        while (next <= arr[idx]) {
+            // 각 자연수를 push한 뒤 로그에 표시
+            s.push(next++);
+            log.push('+');
+        }
+        // 스택에서 idx번째 스택 수열이 존재할 동안
+        while (!s.empty() && (s.top() == arr[idx])) {
+            // 스택에서 수열의 성분을 pop한 뒤 로그에 표시하고
+            s.pop();
+            log.push('-');
+            // 다음 스택 수열에 대해 반복
+            idx += 1;
+        }
+    }
 
-	//ans를 만들면서 q에 i + 1을 push
-	for (int i = 0; i < size; i++)
-	{
-		scanf("%d", &ans[i]);
-		q.push(i + 1);
-	}
-
-	//ans의 인덱스는 0부터 시작
-	buf = 0;
-
-	//q와 s로 ans를 구현할 수 있을 때
-	while(isCont)
-	{
-		//두 while문 안에 들어가지 못했다면 q와 s로 ans를 구현하지 못함
-		isCont = false;
-
-		//q에서 ans[buf]보다 큰 값을 발견할 때까지
-		//q에서 pop한 값을 s에 넣는다
-		while (!q.empty() && (q.front() <= ans[buf]))
-		{
-			isCont = true;
-
-			s.push(q.front());
-			q.pop();
-			ret.push('+');
-		}
-
-		//s.top()과 ans[buf]가 같다면 계속해서 s를 pop하고 ans의 인덱스를 1 늘린다
-		while (!s.empty() && (s.top() == ans[buf]))
-		{
-			isCont = true;
-
-			s.pop();
-			buf += 1;
-			ret.push('-');
-		}
-	}
-
-	//buf가 size보다 작다면 구현 도중 실패한 것
-	if (buf < size) printf("NO\n");
-	//구현에 성공했다면 ret을 출력한다
-	else while(!ret.empty())
-	{
-		printf("%c\n", ret.front());
-		ret.pop();
-	}
+    // idx가 n 이하라면 NO를 출력하고
+    if (idx < n) cout << "NO\n";
+    // 그렇지 않다면 로그를 순차적으로 출력한다
+    else while (!log.empty()) {
+        cout << log.front() << '\n';
+        log.pop();
+    }
 
     return 0;
 }

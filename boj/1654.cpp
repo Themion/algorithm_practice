@@ -1,50 +1,37 @@
 #include <cstdio>
 
-//cable[i]: i번째로 주어진 랜선의 길이
-unsigned int k, n, cable[10000];
+typedef unsigned int ui;
 
-//길이 mid짜리 랜선 토막의 수
-unsigned int cable_cut(unsigned long long mid)
-{
-    unsigned int sum = 0;
-    for (int i = 0; i < k; i++) sum += cable[i] / mid;
-    return sum;
+#define MAX_K 10000
+
+ui K, N, cable[MAX_K];
+
+// 모든 랜선을 길이 mid로 잘랐을 때 랜선을 N개 이상 얻을 수 있다면 true
+bool cable_cut(ui mid) {
+    // 모든 랜선을 mid개로 잘라 얻은 개수를 sum에 저장
+    ui sum = 0;
+    for (int i = 0; i < K; i++) sum += cable[i] / mid;
+    // 얻은 랜선 수가 N개 이상인지 여부를 반환
+    return sum >= N;
 }
 
-int main()
-{
-    //cnt: 랜선 토막의 수
-    //min, mid, max: 이분 탐색에 쓰이는 범위
-    unsigned long long cnt = 0, min, mid, max;
-    scanf("%d %d", &k, &n);
-    for (int i = 0; i < k; i++) 
-    {
-        scanf("%lld", cable + i);
-        cnt += cable[i];
-    }
+int main() {
+    // min, max, mid: 이분 탐색에 사용할 랜선을 자를 길이
+    ui min = 1, max = __INT_MAX__, mid = (min + max) / 2;
 
-    //랜선 토막의 길이는 1보다 짧지 않다
-    min = 1;
-    //랜선을 토막낸 뒤 자투리의 길이의 합이 랜선 토막의 길이보다 길 수도 있다
-    max = cnt / n;
-    mid = (min + max) / 2;
+    // 문제의 조건을 입력받은 뒤
+    scanf("%d %d", &K, &N);
+    for (int i = 0; i < K; i++) scanf("%d", cable + i);
 
-    //최적의 랜선 토막의 길이를 이분 탐색을 이용해 찾는다
-    while (min != max)
-    {
-        cnt = cable_cut(mid);
-
-        if (cnt >= n)   min = mid + 1;
-        else            max = mid - 1;
+    // 자를 랜선 길이에 대해 이분 탐색을 실행해 최적의 길이를 찾는다
+    while (min <= max) {
+        if (cable_cut(mid)) min = mid + 1;
+        else                max = mid - 1;
         mid = (min + max) / 2;
     }
 
-    //이렇게 구한 랜선 토막의 길이가 간혹 정답의 범위에서 벗어날 때가 있으므로
-    //토막의 길이가 정답의 범위 안에 들 때까지 토막의 길이를 줄인다
-    while (cable_cut(mid) < n) mid--;
-
-    //최적의 토막 길이를 출력한다
-    printf("%lld\n", mid);
+    // 랜선을 잘라 N개 이상 얻을 수 있는 최소의 길이를 출력
+    printf("%d\n", mid);
 
     return 0;
 }

@@ -1,54 +1,54 @@
 #include <cstdio>
 #include <queue>
 
-#define MAX 100000
+using namespace std;
 
-int N, K;
-//map[i]: 노드 i를 방문했는지 확인
-bool map[MAX + 1] = { false, };
-//bfs에 사용할 노드
-std::queue<int> q;
+#define MAX_N 100000
 
-int main()
-{
-    //2중 루프를 벗어나기 위한 트리거
-    bool found = false;
-    //time: 도착 노드까지 걸리는 시간, size: bfs에 사용되는 큐의 크기
-    //node: 방문할 각 노드
-    int time = 0, size, node;
+// visit[i]: 노드 i를 방문했다면 true
+bool visit[MAX_N + 1];
+// bfs에 사용할 노드
+queue<int> q;
 
+// q에 node를 push하고 방문 여부를 표시
+void push(int node) {
+    // node가 범위를 벗어났거나 이미 방문한 노드라면 return
+    if (node < 0 || node > MAX_N || visit[node]) return;
+    q.push(node);
+    visit[node] = true;
+}
+
+int main() {
+    // N: 시작 노드, K: 도착 노드
+    // time: 도착 노드까지 걸리는 시간, size: bfs에 사용되는 큐의 크기
+    int N, K, time = 0, size = 1;
+
+    // 문제의 조건을 입력받은 뒤
     scanf("%d %d", &N, &K);
-    map[N] = true;
-    q.push(N);
 
-    //아직 목표 노드를 찾지 못했다면
-    while (!found)
-    {
-        //큐의 사이즈만큼 루프를 돌면서
-        size = q.size();
-        for (int i = 0; i < size; i++)
-        {
-            //큐의 각 성분이 목표 노드인지 확인한 후
-            node = q.front();
-            if (node == K)
-            {
-                //맞다면 걸린 시간을 출력한 뒤 종료
-                printf("%d\n", time);
-                found = true;
-                break;
-            }
-            //1초만에 이동할 수 있는 노드를 큐에 넣어 bfs
-            for (auto t : {node - 1, node + 1, node * 2})
-                if (0 <= t && t <= MAX && !map[t])
-                {
-                    map[t] = true;
-                    q.push(t);
-                }
-            //탐색한 노드는 큐에서 제거
-            q.pop();
+    // 시작 노드를 q에 push
+    push(N);
+
+    // 목표 노드를 찾을 때까지 탐색 가능한 모든 노드에 대해
+    while (!visit[K]) {
+        // 큐에서 노드 하나를 가져온 뒤
+        int node = q.front();
+        q.pop();
+
+        // 현재 노드에서 1초만에 이동 가능한 모든 노드 n를 q에 push
+        for (auto n : {node - 1, node + 1, node * 2}) push(n);
+
+        // time 시간에 도착 가능한 모든 노드를 탐색했다면
+        if (!--size) {
+            // q의 크기를 갱신하고 시간을 1 늘린다
+            size = q.size();
+            time++;
         }
-        time++;
     }
+    
+    // N에서 K까지 이동하는 데에 걸리는 최소 시간을 출력
+    // q의 모든 원소를 탐색하지 않았다면 time은 정답 - 1이기 때문에 에러 처리
+    printf("%d\n", time + (size != q.size()));
 
     return 0;
 }

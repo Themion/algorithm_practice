@@ -1,75 +1,72 @@
-#include <cstdio>
+#include <iostream>
 #include <queue>
 #include <vector>
 
 using namespace std;
 
 #define INF 0x3f3f3f3f
-#define MAX_N 1001
+#define MAX_N 1000
 #define _cost first
 #define _node second
 
 typedef pair<int, int> edge;
-typedef priority_queue<edge, vector<edge>, greater<edge>> edge_q;
 
-int N, M;
-// graph[start]: start에서 출발하는 노드의 집합
-vector<edge> graph[MAX_N];
+// N: 노드의 수, M: 에지의 수, cost[i]: 시작 노드에서 i번 노드까지의 비용
+int N, M, cost[MAX_N + 1];
+// 다익스트라 탐색에 사용할 우선순위 큐
+priority_queue<edge, vector<edge>, greater<edge>> q;
+// v[i]: i번 노드에서 시작하는 에지의 집합
+vector<edge> v[MAX_N + 1];
 
-void set_min(int &a, int &b) { a < b ? b = a : a = b; }
+// 에지 e를 q에 push하며 비용을 갱신
+int push(edge e) {
+    // e를 사용해서 비용이 갱신되지 않는다면 return
+    if (cost[e._node] <= e._cost) return 0;
 
-// 다익스트라를 이용해 최단거리 탐색
-int dijkstra(int start, int dest)
-{
-    // costs[i]: start에서 i까지의 최소 비용
-    int costs[MAX_N];
-    // 각 에지를 정렬하여 순차적으로 탐색할 때 사용할 우선순위 큐
-    edge_q q;
+    // 비용을 갱신한 뒤
+    cost[e._node] = e._cost;
+    // e의 도착 노드에서 시작하는 모든 에지에 대해
+    for (auto e_ : v[e._node]) 
+        // 비용 갱신이 가능하면 push
+        if (cost[e_._node] > cost[e._node] + e_._cost)
+            q.push({cost[e._node] + e_._cost, e_._node});
 
-    // 최소 비용을 전부 무한대로 설정한 뒤 시작 노드의 비용을 초기화
-    fill_n(costs, N + 1, INF);
-    costs[start] = 0;
-    // 시작 노드와 연결된 노드를 q에 push
-    for (edge e : graph[start]) q.push(e);
-
-    // 탐색 가능한 에지가 존재할 때
-    while (!q.empty())
-    {
-        // 비용이 가장 작은 에지 e를 q에서 제거
-        edge e = q.top();
-        q.pop();
-        
-        // e를 이용했을 때 비용을 줄일 수 있다면
-        if (costs[e._node] > e._cost)
-        {
-            // 비용을 e를 이용한 비용으로 갱신한 뒤
-            costs[e._node] = e._cost;
-            // e를 이용한 뒤의 경우를 q에 push
-            for (auto ed : graph[e._node])
-                q.push({costs[e._node] + ed._cost, ed._node});
-        }
-    }
-
-    // start 노드에서 dest 노드까지의 최소 비용을 반환
-    return costs[dest];
+    return e._node;
 }
 
-int main()
-{
-    // start에서 dest까지 이동할 때 cost만큼의 비용을 소모
-    int start, dest, cost;
+// start 노드에서 dest 노드까지의 최소 비용을 계산
+int dijkstra(int start, int dest) {
+    // 모든 비용을 INF로 초기화한 뒤
+    fill_n(cost, N + 1, INF);
 
-    // 그래프를 입력받아 v에 저장
-    scanf("%d\n%d", &N, &M);
-    while (M--)
-    {
-        scanf("%d %d %d", &start, &dest, &cost);
-        graph[start].push_back({cost, dest});
+    // start 노드에서 start 노드로 이동하는 가상의 에지를 push
+    push({0, start});
+    // dest 노드를 탐색할 때까지 탐색 가능한 모든 에지를 push
+    while (!q.empty() && push(q.top())!= dest) q.pop();
+    // start 노드에서 dest 노드까지의 최소 비용을 반환
+    return cost[dest];
+}
+
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    // start, dest: start 노드에서 dest 노드로 이동하는 에지
+    int start, dest;
+
+    // 문제의 조건을 입력받는다
+    cin >> N >> M;
+    while (M--) {
+        // cost는 [1, N] 범위만 사용하므로 cost[0]을 임시로 사용
+        cin >> start >> dest >> cost[0];
+        v[start].emplace_back(cost[0], dest);
     }
 
-    // 시작 노드와 끝 노드을 입력받아 최소 비용을 다익스트라로 계산
-    scanf("%d %d", &start, &dest);
-    printf("%d\n", dijkstra(start, dest));
+    // 시작 노드와 도착 노드를 입력받아 
+    cin >> start >> dest;
+    cout << dijkstra(start, dest) << '\n';
 
     return 0;
 }

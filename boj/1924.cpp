@@ -1,34 +1,21 @@
 #include <cstdio>
 
-int main()
-{
-	//x는 달, y는 일
-	int x, y, count = 0;
-	scanf("%d %d", &x, &y);
-	char day[7][4] = { "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN" };
+int main() {
+    // day[i]: x월 y일을 1월 i일로 치환했을 때 i % 7일의 요일
+    char day[7][4] = {"MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
+    // x, y: x월 y일
+    int x, y, ans = 0, month[13] = {
+        0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+    };
+    // 문제의 조건을 입력받은 뒤
+    scanf("%d %d", &x, &y);
+    // x월 이전까지의 모든 날을 더한다
+    for (int i = 1; i < x; i++) ans += month[i];
+    // 1일부터 y일까지의 일 수를 더한다
+    ans += y - 1;
 
-	//x월 y일부터 1일씩 빼가면서 요일을 계산
-	//1월 1일에 멈춤
-	while (x != 1 || y != 1)
-	{
-		//하루 빼고 count를 1 더함
-		y -= 1;
-		count += 1;
-
-		//만일 k월 0일이 되었을 경우
-		//k를 1 빼준 뒤 k월에 맞는 말일로 y를 변경 
-		if (y == 0)
-		{
-			x -= 1;
-
-			if (x == 2) y = 28;
-			else if ((x == 4) || (x == 6) || (x == 9) || (x == 11)) y = 30;
-			else y = 31;
-		}
-	}
-
-	//count를 7로 나눈 나머지를 이용해 요일을 출력한다
-	printf("%s\n", day[count % 7]);
+    // ans를 7로 나눈 나머지를 이용해 요일을 출력한다
+    printf("%s\n", day[ans % 7]);
 
     return 0;
 }
