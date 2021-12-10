@@ -1,35 +1,26 @@
-#include <cstdio>
+#include <iostream>
 
-//삼각형을 저장할 컨테이너
-int tri[500][500];
+using namespace std;
 
-int main()
-{
-	//삼각형의 높이,
-	int size;
-	
-	//삼각형을 입력받는다
-	scanf("%d", &size);
-	for (int i = 0; i < size; i++) for (int j = 0; j <= i; j++) 
-		scanf("%d", &tri[i][j]);
+#define MAX_N 500
 
-	//삼각형의 각 항에 대해
-	for (int i = 1; i < size; i++)
-	{
-		tri[i][0] += tri[i - 1][0];
+int max(int a, int b) { return a > b ? a : b; }
 
-		//자신 바로 위 항과 그 이전 항을 비교해 더 큰 쪽의 값을 더한다
-		for (int j = 1; j <= i + 1; j++)
-			tri[i][j] += tri[i - 1][j - 1] > tri[i - 1][j] ? 
-						 tri[i - 1][j - 1] : tri[i - 1][j];
-	}
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-	//해당 공간에 tri[size - 1] 배열의 최댓값을 저장한다
-	for (int i = 0; i < size; i++) 
-		if (tri[0][0] < tri[size - 1][i]) tri[0][0] = tri[size - 1][i];
+    int n, tri[MAX_N][MAX_N + 1] = {{ 0, }}, ans = 0;
 
-	//tri[size - 1] 안의 최댓값을 출력한다
-	printf("%d\n", tri[0][0]);
+    cin >> n;
+    for (int i = 0; i < n; i++) for (int j = 1; j <= i + 1; j++) {
+        cin >> tri[i][j];
+        tri[i % 2][j] += max(tri[i - 1][j - 1], tri[i - 1][j]);
+    }
+
+    for (int i = 1; i <= n; i++) ans = max(ans, tri[n - 1][i]);
+    cout << ans << '\n';
 
     return 0;
 }
