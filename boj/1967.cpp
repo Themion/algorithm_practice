@@ -5,61 +5,54 @@ using namespace std;
 
 typedef pair<int, int> edge;
 
+#define MAX 10000
 #define _node first
-#define _cost second
+#define _dist second
 
+// visit[i]: 노드 i를 방문했다면 true
+bool visit[MAX + 1];
+// 트리의 최대 지름
 int ans = 0;
-bool visit[10001];
-vector<edge> tree[10001];
+// tree[i]: 노드 i와 연결된 에지(들)
+vector<edge> tree[MAX + 1];
 
-void swap(int &a, int &b)
-{
-    int temp = a;
-    a = b;
-    b = temp;
-}
+void swap(int &a, int &b) { int temp = a; a = b; b = temp; }
 void set_max(int &a, int b) { a = a > b ? a : b; }
 
-int dfs(int node)
-{
-    // 서브 트리에서 리프 노드까지의 거리 중 가장 긴 두 거리
-    // 반드시 오름차순으로 정렬
-    int max[2] = { 0, 0 };
+int dfs(int node) {
+    // node의 자식 노드를 루트로 삼는 서브 트리의 반지름 중 가장 긴 두 반지름
+    int dist[2] = { 0, 0 };
 
-    // node와 연결된 노드 중 방문하지 않은 노드 _node에 대해
-    for (edge e : tree[node]) if (!visit[e._node])
-    {
-        // _node를 방문함을 표시
-        visit[e._node] = true;
-        // _node에서 리프 노드까지의 거리 중 가장 긴 것을
-        // max[1]과 비교해 더 큰 값을 저장
-        set_max(max[1], dfs(e._node) + e._cost);
-        // 정렬
-        if (max[0] < max[1]) swap(max[0], max[1]);
+    // node를 방문했음을 표시
+    visit[node] = true;
+
+    // node의 자식 노드에 대해
+    for (edge e : tree[node]) if (!visit[e._node]) {
+        // 각 서브 트리의 가장 긴 반지름을 
+        // 현재 트리의 두 번째로 긴 반지름과 비교하여 갱신
+        set_max(dist[1], dfs(e._node) + e._dist);
+        // 가장 긴 두 반지름을 비교하여 정렬
+        if (dist[0] < dist[1]) swap(dist[0], dist[1]);
     }
 
-    // 가장 긴 두 경로의 합을 기존 트리의 지름과 비교
-    set_max(ans, max[0] + max[1]);
-
-    // 가장 긴 경로를 반환
-    return max[0];
+    // 트리의 지름을 두 반지름의 합과 비교하여 갱신
+    set_max(ans, dist[0] + dist[1]);
+    // 가장 긴 반지름을 반환
+    return dist[0];
 }
 
-int main()
-{
+int main() {
     int n, a, b, c;
 
     // 트리를 입력받은 뒤
     scanf("%d", &n);
-    while (n-- > 1)
-    {
+    while (n-- > 1) {
         scanf("%d %d %d", &a, &b, &c);
         tree[a].push_back({b, c});
         tree[b].push_back({a, c});
     }
 
     // 루트 노드에서부터 차례로 서브 트리를 탐색하며 지름을 찾는다
-    visit[1] = true;
     dfs(1);
 
     // 트리의 지름을 출력
