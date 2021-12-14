@@ -41,9 +41,9 @@ ll get(int idx) {
 
 int main() {
     // 빠른 입출력을 위해 사용
-	ios::sync_with_stdio(false);
-	cin.tie(NULL);
-	cout.tie(NULL);
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
     ll a, b, c;
     cin >> N >> M >> K;
