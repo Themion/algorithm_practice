@@ -17,8 +17,7 @@ int split_brac(deq q);
 
 // 괄호 문자열 q의 시작과 끝 두 문자를 제거한 뒤
 // 두 괄호 문자가 연속해서 올 수 있다면 q에 대해 split_brac, 아니라면 -1을 반환
-int peel_brac(deq q)
-{
+int peel_brac(deq q) {
     if (q.empty()) return 0;
 
     char left = q.front(), right = q.back();
@@ -33,16 +32,14 @@ int peel_brac(deq q)
 
 // 여러 괄호 문자열을 붙인 괄호 문자열 q를 각각의 괄호 문자열로 떼어낸 뒤
 // 각 괄호 문자열이 옳은 문자열이라면 그 점수를, 아니라면 -1을 반환
-int split_brac(deq q)
-{
+int split_brac(deq q) {
     // 빈 문자열을 옳은 괄호 문자열로 간주하고 그 점수를 1로 설정
     if (q.empty()) return 1;
 
-    // ret: q의 총 점수
-    // small, big: 소괄호, 대괄호의 깊이
-    int ret = 0, small, big;
     // valid: 괄호 문자열이 옳은 문자열이라면 true, 아니라면 false
     bool valid = true;
+    // ret: q의 총 점수, small, big: 소괄호, 대괄호의 깊이
+    int ret = 0, small, big;
     // q의 시작점에서 시작하는 부분 문자열을 저장하는 공간
     deq s;
 
@@ -76,24 +73,24 @@ int split_brac(deq q)
         else return -1;
     }
 
-    // 문자열의 점수에 valid, 부분 문자열의 깊이를 곱해 최종 점수를 반환
-    return ret * valid * !(small || big);
+    // 루프를 빠져나왔다면 입력받은 괄호가 올바른 괄호였으므로 그 값을 반환
+    return ret;
 }
 
-int main()
-{
+int main() {
+    // 괄호를 한 글자씩 입력받기 위한 버퍼
     char buf;
+    // 괄호의 값
     int ans;
+    // 괄호를 deque에 저장해 값을 계산
     deq input;
-    
-    // 문자를 하나씩 입력받아 deque에 저장
-    do {
-        scanf("%c", &buf);
-        input.push_back(buf);
-    } while (buf != '\n');
 
-    // 맨 마지막에 줄바꿈 문자가 들어갔으므로 이를 pop
-    input.pop_back();
+    // 문자를 하나씩 입력받아 deque에 저장
+    scanf("%c", &buf);
+    while (buf != '\n'){
+        input.push_back(buf);
+        scanf("%c", &buf);
+    }
 
     // 문자열의 점수를 계산
     ans = split_brac(input);

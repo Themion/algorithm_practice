@@ -1,44 +1,38 @@
-#include <utility>
-#include <cstdio>
+#include <iostream>
 
 using namespace std;
 
-typedef long long ll;
-typedef pair<int, int> pair_;
-
 #define MAX_N 100000
-#define l first
-#define r second
 
-ll liq[MAX_N + 1];
+int liq[MAX_N + 1];
 
 // 정수를 입력받아 그 절댓값을 반환
-ll abs(ll n) { return n >= 0 ? n : -n; }
-// 합칠 용액의 인덱스를 pair 형태로 입력받아 두 용액을 합친 특성값을 반환
-ll sum(pair_ ptr){ return liq[ptr.l] + liq[ptr.r]; }
+int abs(int n) { return n >= 0 ? n : -n; }
 
-int main()
-{
-    // ptr: 투 포인터에서 현재 포인터, ans: 정답 포인터
-    pair_ ptr = {1, 1}, ans;
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    // l, r: 배열을 탐색하기 위한 두 인덱스
+    // a, b: 정답을 출력하기 위한 두 인덱스
+    int l = 1, r, a = 0, b = 1;
 
     // 용액의 수와 각 용액의 특성값을 입력
-    scanf("%d", &ptr.r);
-    for (int i = ptr.l; i <= ptr.r; i++) scanf("%lld", liq + i);
+    cin >> r;
+    for (int i = l; i <= r; i++) cin >> liq[i];
 
-    // 투 포인터의 초기값을 양극단의 값으로 지정
-    ans = ptr;
     // 투 포인터 실행
-    while (ptr.l < ptr.r)
-    {
+    while (l < r) {
         // 두 용액을 합쳤을 때 특성값이 기존 특성값보다 작다면 그 포인터쌍을 저장
-        if (abs(sum(ptr)) < abs(sum(ans))) ans = ptr;
+        if (abs(liq[l] + liq[r]) < abs(liq[a] + liq[b])) { a = l; b = r; }
         // 포인터를 합친 용액의 특성값에 따라 이동
-        sum(ptr) > 0 ? ptr.r-- : ptr.l++;
+        liq[l] + liq[r] > 0 ? r-- : l++;
     }
 
     // 합친 용액의 특성값이 0에 가장 가까운 두 용액의 특성값을 출력
-    printf("%lld %lld\n", liq[ans.l], liq[ans.r]);
+    cout << liq[a] << ' ' << liq[b] << '\n';
 
     return 0;
 }
