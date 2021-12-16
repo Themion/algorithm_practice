@@ -1,52 +1,34 @@
 #include <cstdio>
 
-//pair 대신 쓸 클래스
-class part { public: int val = 0, time = 0; };
+void test_case() {
+    // N: 인수를 계산할 수, cnt: 각 인수의 차수
+    int N, cnt;
 
-int main()
-{
-	//n: 테스트 케이스의 수, base: 각 테스트 케이스에서 인수를 구할 수
-	//cnt: base의 인수 후보, idx: 인덱싱에 쓸 변수
-	int n, base, cnt, idx;
-	//base의 인수와 그 계수를 저장한 컨테이너
-	//가장 작은 일곱 개의 소수 2, 3, 5, 7, 11, 13, 17을 곱하면 100000보다 크므로
-	//base가 가질 수 있는 서로 다른 인수의 수는 총 6개이다
-	part cont[6];
+    // N을 입력받은 뒤
+    scanf("%d", &N);
 
-	//테스트 케이스의 수를 입력받는다
-	scanf("%d", &n);
+    // 2부터 차례로 인수를 계산
+    for (int i = 2; N > 1; i++) {
+        // 인수의 차수를 초기화한 뒤
+        cnt = 0;
+        // N이 i로 나누어 떨어질 때마다
+        while (!(N % i)) {
+            // N을 i로 나누고 cnt를 1 더함
+            N /= i;
+            cnt++;
+        }
+        // cnt가 0이 아니라면 N이 i로 나누어 떨어진다는 뜻이므로
+        // 인수 i와 그 차수 cnt를 출력
+        if (cnt) printf("%d %d\n", i, cnt);
+    }
+}
 
-	//각 테스트 케이스에 대해
-	for (int i = 0; i < n; i++)
-	{
-		//소인수 분해를 할 수를 입력받는다
-		scanf("%d", &base);
-		//cont의 0번 공간부터 저장한다
-		idx = 0;
+int main() {
+    // T: 테스트 케이스의 수
+    int T;
+    // 테스트 케이스를 입력받은 뒤 각 테스트 케이스의 결과를 출력
+    scanf("%d", &T);
+    while (T--) test_case();
 
-		//2보다 크거나 같은 수에 대해
-		for(cnt = 2; cnt <= base; cnt++)
-		{
-			//해당 수의 등장 횟수를 저장
-			cont[idx].val = cnt;
-			cont[idx].time = 0;
-
-			//base가 cnt를 약수로 가지는 동안
-			while (base % cnt == 0)
-			{
-				//base를 cnt로 나누고 그 횟수를 저장
-				cont[idx].time++;
-				base /= cnt;
-			}
-
-			//cnt가 base의 약수였다면 이 공간을 수정하지 않는다
-			if (cont[idx].time != 0) idx++;
-		}
-
-		//base의 각 약수와 그 계수를 출력한다
-		for (cnt = 0; cnt < idx; cnt++)
-			printf("%d %d\n", cont[cnt].val, cont[cnt].time);
-	}
-
-	return 0;
+    return 0;
 }
