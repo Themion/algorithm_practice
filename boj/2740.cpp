@@ -1,36 +1,33 @@
 #include <cstdio>
 
-short a[100][100], b[100][100];
+#define MAX_N 100
 
-//행렬의 한 항을 함수 내에서 계산
-int mul(int n, int i, int k)
-{
+short A[MAX_N][MAX_N], B[MAX_N][MAX_N];
+
+// 행렬의 한 항을 함수 내에서 계산
+int mul(int N, int M, int K) {
     int ret = 0;
-    for(int m = 0; m < i; m++) ret += a[n][m] * b[m][k];
+    for (int m = 0; m < M; m++) ret += A[N][m] * B[m][K];
     return ret;
 }
 
-int main()
-{
-    ///a[n][m], b[m][k]
-    int n, m, k;
+int main() {
+    // A[N][M], B[M][K]
+    int N, M, K;
 
-    //행렬 a를 입력받는다
-    scanf("%d %d", &n, &m);
-    for (int i = 0; i < n; i++) for (int j = 0; j < m; j++)
-        scanf("%hd", &a[i][j]);
-        
-    //행렬 b를 입력받는다
-    scanf("%*d %d", &k);
-    for (int i = 0; i < m; i++) for (int j = 0; j < k; j++)
-        scanf("%hd", &b[i][j]);
+    // 행렬 A를 입력받는다
+    scanf("%d %d", &N, &M);
+    for (int i = 0; i < N; i++) for (int j = 0; j < M; j++)
+        scanf("%hd", &A[i][j]);
 
-    //행렬 A*B를 저장하지 않고 바로 출력한다
-    for(int i = 0; i < n; i++) 
-    {
-        for(int j = 0; j < k; j++) printf("%d ", mul(i, m, j));
-        printf("\n");
-    }
+    // 행렬 B를 입력받는다
+    scanf("%*d %d", &K);
+    for (int i = 0; i < M; i++) for (int j = 0; j < K; j++) 
+        scanf("%hd", &B[i][j]);
+
+    // 행렬 A*B를 저장하지 않고 바로 출력한다
+    for (int i = 0; i < N; i++) for (int j = 0; j < K; j++) 
+        printf("%d%c", mul(i, M, j), (j == K - 1 ? ' ' : '\n'));
 
     return 0;
 }

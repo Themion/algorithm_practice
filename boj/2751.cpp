@@ -1,23 +1,26 @@
-#include <algorithm>
-#include <cstdio>
+#include <iostream>
 
-//입력받은 배열을 저장할 컨테이너
-int cont[1000000];
+using namespace std;
 
-int main()
-{
-	//입력받은 자연수의 개수
-	int n;
-	scanf("%i", &n);
+#define MAX_N 1000000
 
-	//배열을 입력받음
-	for (int i = 0; i < n; i++) scanf("%i", &cont[i]);
+int main() {
+    // arr[i + MAX_N]: 입력으로 i가 주어졌다면 true, 아니라면 false
+    bool arr[2 * MAX_N + 1] = { 0 };
+    // N: 배열의 크기, buf: 각 수를 입력받을 공강
+    int N, buf;
 
-	//STL을 이용하여 정렬
-	std::sort(cont, cont + n);
+    // 배열의 크기를 입력받은 뒤
+    cin >> N;
+    while (N--) {
+        // 각 수를 입력받아 인덱스로 바꾼 뒤 arr에 저장
+        cin >> buf;
+        arr[buf + MAX_N] = true;
+    }
 
-	//정렬된 배열을 출력
-	for (int i = 0; i < n; i++) printf("%i\n", cont[i]);
+    // 배열을 정렬한 뒤 오름차순으로 출력
+    for (int i = 0; i <= 2 * MAX_N; i++) if (arr[i])
+        cout << i - MAX_N << '\n';
 
     return 0;
 }

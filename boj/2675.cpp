@@ -1,29 +1,26 @@
 #include <cstdio>
 
-int main()
-{
-	//입력받은 문자열을 저장할 컨테이너
-	char buf;
-	//tc : 테스트 케이스의 수
-	//rec : 각 테스트 케이스마다 반복할 수
-	int tc, rec;
+void test_case() {
+    // R: 문자열의 반복 횟수, s: 문자열의 각
+    int R, s;
 
-	scanf("%d", &tc);
+    // 문자열 반복 횟수와 문자열의 첫 글자를 입력받는다
+    scanf("%d %c", &R, &s);
+    // 문자열의 모든 글자에 대해
+    while (s != '\n') {
+        // 각 글자를 R번 출력한 뒤 다음 문자를 입력받는다
+        for (int i = 0; i < R; i++) printf("%c", s);
+        scanf("%c", &s);
+    }
+    
+    // 개행 문자를 출력해 출력을 종료
+    printf("\n");
+}
 
-	//매 테스트 케이스마다 문자열을 입력받은 뒤
-	//문자열의 각 문자를 rec만큼 반복하여 출력한다
-	for (int i = 0; i < tc; i++)
-	{
-	    scanf("%d %c", &rec, &buf);
-
-        while(buf != '\n')
-        {
-            for(int j = 0; j < rec; j++) printf("%c", buf);
-            scanf("%c", &buf);
-        }
-
-        printf("\n");
-	}
+int main() {
+    int T;
+    scanf("%d", &T);
+    while (T--) test_case();
 
     return 0;
 }

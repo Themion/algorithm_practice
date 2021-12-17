@@ -1,7 +1,6 @@
 #include <cstdio>
 
-int main()
-{
+int main() {
     //두 수 a와 b를 입력받은 뒤
     int a, b;
     scanf("%d %d", &a, &b);

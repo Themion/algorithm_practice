@@ -1,7 +1,7 @@
 #include <cstdio>
 
 int main() {
-    //출력에 사용할 수를 입력받는다
+    // 출력에 사용할 수를 입력받는다
     int N;
 
     scanf("%d", &N);
