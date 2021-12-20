@@ -1,30 +1,31 @@
+#include <algorithm>
 #include <cstdio>
 
-int main()
-{
-	//input : 설탕의 무게
-	//t3 : input이 5로 나누어 떨어지지 않으면 계속해서 1씩 더함
-	int input, t3 = 0;
-	scanf("%d", &input);
+#define MAX_N 5000
+#define INF 0x3f3f
 
-	while (input >= 0)
-	{
-		//input이 5로 나누어 떨어진다면 (input / 5) + t3을 출력
-		if (input % 5 == 0)
-		{
-			printf("%d\n", (input / 5) + t3);
-			break;
-		}
-		//input이 나누어 떨어지지 않는다면 input에 3을 빼고 t3에 1을 더함
-		else
-		{
-			input -= 3;
-			t3 += 1;
-		}
-	}
+using namespace std;
 
-	//input이 음수가 될 때까지 5로 나누어 떨어지지 않는다면 -1을 출력
-	if (input < 0) printf("-1\n");
+short min(short a, short b) { return a < b ? a : b; }
+
+int main() {
+    // 배달할 설탕의 무게
+    int N;
+    // val[i]: 설탕의 무게가 i일 때 설탕의 봉지 수
+    short val[MAX_N + 1];
+
+    // 배달할 설탕의 무게를 입력받은 뒤
+    scanf("%d", &N);
+    // 어떤 무게가 배달 가능한 무게인지 알 수 없으므로
+    // 모든 값을 INF로 설정한 뒤 봉지의 단위 무게 3과 5의 봉지 수를 1로 설정
+    fill_n(val, N + 1, INF);
+    val[3] = val[5] = 1;
+
+    // 무게 i에 대해 i - 3, 혹은 i - 5 만큼의 무게를 배달 가능할 때
+    // 해당 무게를 배달할 때 봉지의 최솟값에 1을 더한 값으로 설정
+    for (int i = 6; i <= N; i++) val[i] = min(val[i - 3], val[i - 5]) + 1;
+    // 무게 N을 배달 가능하다면 봉투의 개수를, 배달이 불가능하다면 -1을 반환
+    printf("%hd\n", val[N] < INF ? val[N] : -1);
 
     return 0;
 }
