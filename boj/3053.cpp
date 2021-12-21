@@ -1,14 +1,12 @@
-#define _USE_MATH_DEFINES
-
 #include <cstdio>
 #include <cmath>
 
-int main()
-{
-    int r;
-    scanf("%d", &r);
-    //_USE_MATH_DEFINES를 이용하면 cmath에서 원주율을 사용할 수 있다
-    printf("%.6f\n%.6f", M_PI * r * r, 2.0 * r * r);
+int main() {
+    int R;
+    scanf("%d", &R);
+    // 택시 기하학에서 반지름이 R인 원은 한 변의 길이가 R√2인 정사각형과 같다
+    // 유클리드 기하학의 원의 넓이와 택시 기하학에서의 원의 넓이를 출력한다
+    printf("%.6f\n%.6f", M_PI * R * R, 2.0 * R * R);
 
     return 0;
 }

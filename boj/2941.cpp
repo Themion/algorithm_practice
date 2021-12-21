@@ -3,57 +3,28 @@
 
 using namespace std;
 
-int main()
-{
-    //cin, cout 사용 시 필히 사용할 것
+int main() {
     ios::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
 
-    //문자열에 크로아티아 알파벳이 몇 개 있는지 저장
-    int count = 0;
-    //알파벳 두 개로 나타낼 수 있는 크로아티아 알파벳 일곱 개를 미리 저장
-    char pat[7][3] = {"c=", "c-", "d-", "lj", "nj", "s=", "z="};
-    //str : 실제 문자열
-    //sch : 알파벳 두 개로 나타낼 수 있는 크로아티아 알파벳을 찾을 때 쓸 부분 문자열
-    string str, sch;
+    // 크로아티아 알파벳의 수
+    int ans;
+    // str: 크로아티아 알파벳의 수를 셀 문자열
+    // pat: 두 글자 이상으로 표현되는 크로아티아 알파벳
+    string str, pat[8] = {"dz=", "c=", "c-", "d-", "lj", "nj", "s=", "z="};
 
+    // 아스키 코드로 표현되는 문자열을 입력받은 뒤 그 길이를 ans에 저장
     cin >> str;
+    ans = str.size();
 
-    //str의 맨 앞을 지워가면서 카운트
-    while (!str.empty())
-    {
-        //알파벳 세 개로 나타낼 수 있는 크로아티아 알파벳은 하나 뿐
-        //이 알파벳이 들어있다면 알파벳 세 개를 지운다
-        if (str.substr(0, 3) == "dz=") str.erase(0, 3);
-        //그렇지 않다면
-        else
-        {
-            //부분 문자열을 사용해서 두 개 짜리 알파벳을 찾는다
-            sch = str.substr(0, 2);
-            for (int i = 0; i < 7; i++)
-            {
-                //두 개 짜리 알파벳을 찾았다면 알파벳 두 개를 지운다
-                if (sch == pat[i])
-                {
-                    str.erase(0, 2);
-                    break;
-                }
+    // 문자열에서 두 글자 이상으로 표현되는 크로아티아 문자열을 찾을 경우
+    // ans에 1을 뺀다
+    for (int i = 0; i < str.size(); i++) for (auto p : pat)
+        ans -= str.substr(i, p.size()) == p;
 
-                //i == 6이라면 크로아티아 알파벳을 찾지 못한 것이다
-                //알파벳 한 개를 지운다
-                if (i == 6)
-                    str.erase(0, 1);
-            }
-        }
-
-        //알파벳을 몇 개를 지웠건 결국 다 같은 크로아티아 알파벳 한 개이다
-        //크로아티아 알파벳을 하나 카운트한다
-        count += 1;
-    }
-
-    //크로아티아 알파벳의 개수를 출력한다
-    cout << count << '\n';
+    // 문자열 안의 크로아티아 알파벳의 수를 출력한다
+    cout << ans << '\n';
 
     return 0;
 }
