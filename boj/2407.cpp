@@ -15,7 +15,7 @@ void set(char c[MAX_LEN], char a[MAX_N], char b[MAX_N]) {
     // 두 수의 각 성분을 더한 값
     int add_ = 0;
 
-    // 두 수의 각 자리를 더해 그 결과를 ret에 차례로 저장
+    // 두 수의 각 자리를 더해 그 결과를 c에 차례로 저장
     for (int i = MAX_LEN - 1; i >= 0; i--) {
         add_ = a[i] + b[i] + carry;
         c[i] = add_ % MOD;
@@ -51,9 +51,8 @@ int main() {
 
     // 배열의 빈 공간은 건너뛴 다음
     for (; !C[n][m][idx]; idx++);
-    // 첫 자리는 빈 공간을 공백을 넣어 출력하고
+    // 첫 자리는 빈 공간을 공백을 넣어서, 나머지 자리는 0을 넣어서 출력
     printf("%hhd", C[n][m][idx++]);
-    // 나머지 자리는 빈 공간을 0을 넣어 출력
     for (; idx < MAX_LEN; idx++) printf("%02hhd", C[n][m][idx]);
     printf("\n");
 

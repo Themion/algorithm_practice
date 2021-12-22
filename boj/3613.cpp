@@ -1,68 +1,46 @@
-#include <iostream>
-#include <string>
-#include <vector>
+#include <cstdio>
 
-using namespace std;
+bool is_small(char c) { return c >= 'a' && c <= 'z'; }
+bool is_big(char c) { return c >= 'A' && c <= 'Z'; }
+bool is_valid(char c) { return is_small(c) || is_big(c) || c == '_'; }
 
-bool is_valid(char c) { return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_'; }
-
-int main()
-{
-	//cin, cout 사용 시 필히 사용할 것
-	ios::sync_with_stdio(false);
-	cin.tie(NULL);
-	cout.tie(NULL);
-
-    // 변수명이 Java 꼴이거나 cpp 꼴이라면 true
-    bool isJavaLike = false, is_cpp_like = false;
-    // 입력받은 변수명을 저장할 공간
-    string str;
-    // 입력받은 변수명을 단어 단위로 끊어서 저장
-    vector<string> ret(1, "");
-
-    cin >> str;
+int main() {
+    // camelCase, snake_case: 입력받은 변수명이 각 형식과 닮은 부분이 있다면 true
+    bool camelCase = false, snake_case = false;
+    // c: 변수명을 글자 단위로 입력받을 공간, ans: 변수명을 변환해 저장할 공간
+    char c, ans[200] = "";
+    // i: ans에 접근하기 위한 인덱스
+    int i = 0;
 
     // 변수명의 각 글자에 대해
-    for (int i = 0; i < str.size(); i++)
-    {
-        // 글자가 소문자라면 ret의 맨 마지막 단어의 뒤에 추가
-        if (str[i] >= 'a' && str[i] <= 'z') 
-            ret.back() += str[i];
-        // 글자가 대문자라면
-        else if (str[i] >= 'A' && str[i] <= 'Z') 
-        {
-            // ret의 맨 마지막에 단어 _를 추가한 뒤
-            ret.push_back("_");
-            // 글자를 소문자로 바꿔서 맨 마지막의 뒤에 추가
-            ret.back() += str[i] - 'A' + 'a';
-            // 변수명이 Java 꼴임을 표시
-            isJavaLike = true;
+    while (scanf("%c", &c) && is_valid(c) && !(camelCase && snake_case)) {
+        // 소문자는 양쪽 모두에 포함되므로 ans에 그대로 저장
+        if (is_small(c)) ans[i++] = c;
+        // 첫 글자 이외의 부분에 대문자가 들어왔다면
+        else if (is_big(c) && i) {
+            // camelCase한 부분을 발견했으므로 이를 표시한 뒤
+            camelCase = true;
+            // 입력받은 대문자를 밑줄 + 소문자로 변경해 저장
+            ans[i++] = '_';
+            ans[i++] = c - 'A' + 'a';
         }
-        // 글자가 알파벳이 아니라면
-        else 
-        {
-            // ret의 맨 마지막에 빈 단어를 추가한 뒤
-            ret.push_back("");
-            // 그 다음 글자를 대문자로 바꿔서 빈 단어의 뒤에 추가
-            ret.back() += str[++i] += 'A' - 'a';
-            // 변수명이 cpp 꼴임을 표시
-            is_cpp_like = true;
+        // 첫 글자 이외의 부분에 밑줄이 들어왔다면
+        else if (c == '_' && i) {
+            // snake_case한 부분을 발견했으므로 이를 표시한 뒤
+            snake_case = true;
+            // 다음 글자를 입력받아
+            scanf("%c", &c);
+            // 해당 글자가 소문자라면 대문자로 변경해 저장
+            if (is_small(c)) ans[i++] = c - 'a' + 'A';
+            // 그렇지 않다면 에러를 표시하기 위해 camelCase를 true로 변경
+            else camelCase = true;
         }
+        // 이 이외의 모든 입력은 부적절한 변수명을 뜻하므로 에러를 표시
+        else camelCase = snake_case = true;
     }
 
-    // 변수명의 각 단어에 대해
-    // 단어의 길이가 0이거나, 첫 글자가 이상한 글자거나, Java 꼴인 동시에 cpp 꼴이라면
-    for (auto r : ret)
-        if (r.size() == 0 || !is_valid(r[0]) || (isJavaLike && is_cpp_like))
-        {
-            // Error!를 출력한 뒤 프로그램 종료
-            cout << "Error!\n";
-            return 0;
-        }
-
-    // 아무런 문제도 없을 경우 각 단어를 공백 문자 없이 출력
-    for (auto r : ret) cout << r;
-    cout << '\n';
+    // 변수명에 에러가 발생하지 않았다면 변환한 변수명을, 아니라면 "Error!"를 출력
+    printf("%s\n", !(camelCase && snake_case) ? ans : "Error!");
 
     return 0;
 }

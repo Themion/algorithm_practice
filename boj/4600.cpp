@@ -1,7 +1,6 @@
 #include <cstdio>
 
 #define MAX_B 20
-#define MAX_P 100
 
 // 각 다리, 혹은 다리와 다리 사이의 지점
 // time: 이동하는 데에 걸리는/남은 시간
@@ -12,9 +11,13 @@ struct Bridge { public: int time = 0, moving = 0, pending = 0; };
 int min(int a, int b) { return a < b ? a : b; }
 
 int test_case(int B, int P){
+    // time: 모든 인원이 다리를 건너는 데 걸리는 시간
+    // group: 각 다리를 건널 수 있는 그룹의 최대 인원
     int time = 0, group;
+    // bridge[i]: i번째 다리, place: 다리로 이어진 지점
     Bridge bridge[MAX_B], place[MAX_B + 1];
-    
+
+    // 문제의 조건을 입력받은 뒤
     for (int i = 0; i < B; i++) 
         scanf("%d %d", &(bridge[i].moving), &(bridge[i].time));
 
@@ -55,12 +58,9 @@ int test_case(int B, int P){
 
 int main() {
     int B, P;
-    // while문을 이용해 각 테스트 케이스를 실행
-    scanf("%d %d", &B, &P);
-    while (B != 0 && P != 0) {
+    // 각 테스트 케이스를 실행
+    while (scanf("%d %d", &B, &P) && P)
         printf("%d\n", test_case(-B, P));
-        scanf("%d %d", &B, &P);
-    }
 
     return 0;
 }

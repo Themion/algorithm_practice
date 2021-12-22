@@ -1,23 +1,19 @@
 #include <cstdio>
 
-//세 변 중 어느 변이 빗변일지 모른다
-bool is_right (int a, int b, int c) {
-    return (a * a + b * b == c * c) || (b * b + c * c == a * a) || (c * c + a * a == b * b);
-}
+void swap(int &a, int &b) { int temp = a; a = b; b = temp; }
 
-int main()
-{
-    //세 변을 입력받을 공간
-    unsigned int a, b, c;
-    scanf("%d %d %d", &a, &b, &c);
+int main() {
+    // 직각삼각형의 세 변
+    int a, b, c;
 
-    //삼각형의 세 변을 입력받았다면
-    while (!(a == 0 && b == 0 && c == 0))
-    {
-        //직각삼각형인지 판단한 뒤 맞다면 right, 아니라면 wrong을 출력
-        printf("%s\n", is_right(a, b, c) ? "right" : "wrong");
-        //다시 세 변을 입력받는다
-        scanf("%d %d %d", &a, &b, &c);
+    // 각 테스트 케이스에 대해
+    while (scanf("%d %d %d", &a, &b, &c) && a) {
+        // 세 변을 오름차순으로 정렬
+        if (a > b) swap(a, b);
+        if (b > c) swap(b, c);
+
+        // 직각삼각형이라면 right, 아니라면 wront을 출력
+        printf("%s\n", a * a + b * b == c * c ? "right" : "wrong");
     }
 
     return 0;
