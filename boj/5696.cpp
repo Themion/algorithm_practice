@@ -3,7 +3,7 @@
 #define FOR(a, b) for (int i = a; i < b; i++)
 
 // 구간 [1, num]에서 등장하는 digit의 개수를 계산
-void search(int num, int arr[]) {
+void find(int num, int arr[]) {
     // log: 수 num의 각 자리 digit을 뽑아내기 위한 10^n승 변수
     // left, right: k번째 digit의 왼쪽/오른쪽에 있는 수
     // mid: k번째 digit
@@ -55,9 +55,9 @@ int main() {
     scanf("%d %d", &A, &B);
     while (A && B) {
         // 1부터 A까지 각 수가 나오는 횟수와
-        search(A - 1, a);
+        find(A - 1, a);
         // 1부터 B까지 각 수가 나오는 횟수를 계산한 뒤
-        search(B, b);
+        find(B, b);
         // 둘의 차를 출력한다
         FOR(0, 10) printf("%d%c", b[i] - a[i], i == 9 ? '\n' : ' ');
         

@@ -1,108 +1,80 @@
+#include <algorithm>
 #include <deque>
 #include <iostream>
 
 using namespace std;
 
-//배열의 값들을 deque 형태로 저장한다
-deque<int> arr;
-//명령어를 string 형태로 저장하여 사용한다
-string order;
+#define MAX_P 100000
 
-int main()
-{
-	//cin, cout 사용 시 필히 사용할 것
-	ios::sync_with_stdio(false);
-	cin.tie(NULL);
-	cout.tie(NULL);
-
-    //tc: 테스트 케이스의 수, input: deque에 값을 넣을 때 사용할 공간
-    //size: 배열의 크기, d_cnt: 명령어에서 D의 수
-    int tc, input, size, d_cnt;
-    //입력받은 배열에서 값만 저장하기 위해 사용
+void test_case() {
+    // 배열이 뒤집혔다면 true, 아니라면 false
+    bool flip = false;
     char buf;
-    //배열이 뒤집혔는지 여부를 저장한다
-    bool flip;
+    int n, item = 0;
+    // 배열의 값들을 deque 형태로 저장한다
+    deque<int> d;
+    // 실행할 함수의 집합
+    string p;
 
-    //테스트 케이스를 입력받은 뒤 각 케이스마다
-    cin >> tc;
-    while(tc--)
-    {
-        //변수를 초기화한다
-        arr.resize(0);
-        flip = false; d_cnt = 0; input = 0; 
-        buf = '\0';
+    // 명령어와 배열의 크기를 입력받는다
+    cin >> p >> n;
+    cin.get();
 
-        //명령어와 배열의 크기를 입력받는다
-        cin >> order >> size;
-
-        //명령어 안의 D의 수, 즉 배열에서 제거될 값의 수를 계산한다
-        for(int i = 0; i < order.size(); i++) if(order[i] == 'D') d_cnt++;
-
-        //주어진 문자열에서 상수만 빼 deque에 저장한다
-        while(buf != ']')
-        {
-            //한 글자씩 입력받아
-            cin >> buf;
-            
-            //해당 글자가 0부터 9 사이라면 input을 10 곱한 뒤 해당 값을 더한다
-            if ((buf - '0' >= 0) && (buf - '0' <= 9)) 
-                input = input * 10 + (buf - '0');
-            //그렇지 않고 input이 유의미한 값이라면 input을 deque에 넣고 
-            //input을 0으로 초기화한다
-            else if (input)
-            {
-                arr.push_back(input);
-                input = 0;
-            }
-        }
-
-        //배열의 크기보다 더 많이 pop하게 되는 경우에는 에러가 발생한다
-        if(d_cnt > size)
-        {
-            cout << "error" << '\n';
-            continue;
-        }
-
-        //명령어를 글자 단위로 실행한다
-        for(int i = 0; i < order.size(); i++)
-        {
-            //해당 글자가 R이라면 배열을 뒤집는다
-            if(order[i] == 'R') flip = !flip;
-            //해당 글자가 D일 때
-            else if(order[i] == 'D')
-            {
-                //배열이 뒤집혀있다면 배열의 back 원소를,
-                //그렇지 않다면 front 원소를 제거
-                if(flip) arr.pop_back();
-                else     arr.pop_front();
-            }
-        }
-
-        //명령어를 모두 실행했을 때 배열이 뒤집혀있다면
-        if(!flip)
-        {
-            cout << '[';
-            while(!arr.empty())
-            {
-                cout << arr.back();
-                arr.pop_back();
-                if (!arr.empty()) cout << ',';
-            }
-            cout << ']' << '\n';
-        }
-        //그렇지 않다면 배열을 정상적으로 출력한다
-        else
-        {
-            cout << '[';
-            while(!arr.empty())
-            {
-                cout << arr.front();
-                arr.pop_front();
-                if (!arr.empty()) cout << ',';
-            }
-            cout << ']' << '\n';
+    // 배열을 한 글자씩 입력받는다
+    while ((buf = cin.get()) != '\n') {
+        // 입력받은 글자가 숫자라면 push할 숫자의 뒤에 붙인다
+        if (buf >= '0' && buf <= '9') item = 10 * item + buf - '0';
+        // 입력받은 글자가 문자라면 0이 아닌 item을 push한 뒤 item을 초기화
+        else if (item) {
+            d.push_back(item);
+            item = 0;
         }
     }
+
+    // 명령어를 글자 단위로 실행한다
+    for (char c : p) {
+        // 해당 글자가 R이라면 배열을 뒤집는다
+        if (c == 'R') flip = !flip;
+        // 해당 글자가 D일 때
+        else if (c == 'D') {
+            // 배열 안에 원소가 없다면 error를 출력한 뒤 종료
+            if (d.empty()) {
+                cout << "error\n";
+                return;
+            }
+            // 배열이 뒤집혀있다면 배열의 back을, 그렇지 않다면 front를 제거
+            flip ? d.pop_back() : d.pop_front();
+        }
+    }
+
+    // 명령어를 배열 꼴로 출력
+    cout << '[';
+    while (!d.empty()) {
+        // 배열이 뒤집혀 있다면 d의 back을 순차적으로 출력
+        if (flip) {
+            cout << d.back();
+            d.pop_back();
+        }
+        // 그렇지 않다면 d의 front를 순차적으로 출력
+        else {
+            cout << d.front();
+            d.pop_front();
+        }
+        // 배열의 각 성분을 ','로 구분
+        if (!d.empty()) cout << ',';
+    }
+    // 배열을 닫고 출력을 종료
+    cout << "]\n";
+}
+
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    int T;
+    for (cin >> T; T--; ) test_case();
 
     return 0;
 }

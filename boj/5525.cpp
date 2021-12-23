@@ -1,48 +1,34 @@
 #include <cstdio>
 
-using namespace std;
+#define MAX_M 1000000
 
-int main()
-{
-    //N, S: IOI 문자열과 입력받을 문자열의 길이
-    //ret: 가능한 IOI 문자열의 수, idx: 가능한 문자열의 시작 인덱스
-    int N, S, ret = 0, idx;
-    //buf: 문자를 한 문자씩 입력받음
-    //cmp: IOI 문자열의 특정 인덱스에서의 문자
-    char buf, cmp[2] = {'I', 'O'};
-    bool chk = false;
+int main() {
+    // IOI 문자열을 찾을 문자열
+    char S[MAX_M + 1];
+    // N: IOI 문자열의 길이, M: S의 길이
+    // idx: S와 비교할 IOI 문자열의 위치, ans: S에서 찾은 IOI 문자열의 개수
+    int N, M, idx = 0, ans = 0;
 
-    scanf("%d\n%d\n", &N, &S);
+    // 문제의 조건을 입력받은 뒤
+    scanf("%d\n%d\n%s", &N, &M, S);
+    // IOI 문자열의 순서를 그 길이로 바꾼다
     N = 2 * N + 1;
 
-    //입력받는 문자열의 각 문자에 대해
-    for (int i = 0; i <= S; i++)
-    {
-        //문자를 입력받은 뒤
-        scanf("%c", &buf);
-
-        //이 문자가 IOI 문자열의 일부 뒤에 왔을 경우
-        if (chk)
-        {
-            //IOI 문자열의 일부가 된다면 문자열의 길이를 늘리고
-            if (buf == cmp[idx % 2]) idx++;
-            //그렇지 않다면 문자열 길이를 정리한 뒤 문자열을 끝낸다
-            else
-            {
-                chk = false;
-                if (idx >= N) ret += (idx - N) / 2 + 1;
-            }
+    // S의 문자에 대해
+    for (int i = 0; i < M; i++) {
+        // S와 IOI 문자열을 한 글자씩
+        if (S[i] == (idx % 2 ? 'O' : 'I')) {
+            // S에서 IOI 문자열을 모두 찾았다면 ans에 1을 더하고
+            // 기존 비교를 재활용하기 위해 idx에서 2를 뺀다
+            ans += (++idx == N);
+            idx -= (idx == N) << 1;
         }
-        //이 문자가 IOI 문자열의 시작점이 된다면
-        //문자열의 시작을 표시하고 문자열의 길이를 1로 설정
-        if (!chk && buf == 'I')
-        {
-            idx = 1;
-            chk = true;
-        }
+        // 매칭에 실패했다면 S[i]에 따라 idx를 다시 설정
+        else idx = S[i] == 'I';
     }
 
-    printf("%d\n", ret);
+    // S에서 찾은 IOI 문자열의 개수를 출력
+    printf("%d\n", ans);
 
     return 0;
 }
