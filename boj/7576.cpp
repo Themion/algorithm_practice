@@ -1,97 +1,92 @@
-#include <cstdio>
+#include <iostream>
 #include <queue>
 
 using namespace std;
 
-int main()
-{
-	//pair의 fist, second는 가끔 헷갈린다
-	class coord
-	{
-	public:
-		int x, y;
-		coord() { x = 0; y = 0; }
-		coord(int yy, int xx) { x = xx; y = yy; }
-	};
+#define MAX_N 1000
+#define FOR(i, a, b) for(i = a; i < b; i++)
 
-	//w, h: 토마토를 넣은 상자의 넓이와 높이
-	//size: 큐에 들어가 있는 원소의 수를 저장
-	//time: 출력할 값, done[i]: (i==0:지금, 1:이전) 시간에 다 익은 토마토의 개수
-	int w, h, buf, size, time = 0, done[2] = { 0 };
-	//토마토 상자. 메모리 절약을 위해 short 타입을 사용
-	short t[1000][1000] = { {0, } };
-	//바로 직전에 다 익은 토마토가 들어있는 상자의 좌표
-	queue<coord> togo;
+// 토마토가 담긴 칸의 좌표
+class coord {
+public:
+    int n, m;
+    coord() { n = m = 0; }
+    coord(int n, int m) { this->n = n; this->m = m; }
 
-	//토마토 상자의 사이즈를 입력받는다
-	scanf("%d %d", &w, &h);
+    // 좌표 간의 덧셈
+    coord operator+(coord c) {
+        return { this->n + c.n, this->m + c.m };
+    }
+};
 
-	//토마토 상자의 각 칸에 대해
-	for (int i = 0; i < h; i++) for (int j = 0; j < w; j++)
-	{
-		//해당 칸의 토마토 상태를 입력받고
-		scanf("%hd", &t[i][j]);
-		//칸이 비어있거나 익은 토마토가 들어있다면
-		if (t[i][j] != 0)
-		{
-			//익은 토마토의 경우 해당 좌표를 큐에 넣는다
-			if (t[i][j] == 1) togo.push(coord(i, j));
-			//비어있는 칸 역시 다 익은 토마토로 간주한다
-			done[0]++;
-		}
-	}
+// M, N, H: 상자의 크기, cnt: 설익은 토마토의 수
+int M, N, H, cnt = 0;
+// box[h][n][m]: 상자의 각 칸에 든 물건의 종류.
+// 0 -> 설익은 토마토, 1 -> 익은 토마토, -1 -> 빈칸
+short box[MAX_N][MAX_N];
+// q 안의 좌표를 더할 때 사용할 변위
+coord add[6]= {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
+// bfs에 사용할 큐
+queue<coord> q;
 
-	//익을 수 있는 토마토가 다 익기 전까지
-	while ((done[0] != w * h) && (done[1] != done[0]))
-	{
-		//이전 상태에서 다 익은 토마토의 개수를 저장
-		done[1] = done[0];
-		//현재 큐의 사이즈를 저장한다
-		size = togo.size();
+// c가 상자 안의 좌표인지 여부를 반환
+bool valid(coord c) {
+    return c.n >= 0 && c.n < N && c.m >= 0 && c.m < M;
+}
 
-		//이전에 다 익었던 토마토에 대해
-		for (int i = 0; i < size; i++)
-		{
-			//해당 토마토의 각각 왼쪽, 위, 오른쪽, 아래 칸에 익지 않은 토마토가 들어있다면
-			//해당 좌표를 큐에 넣은 뒤 토마토를 익힌다
+int bfs() {
+    // len: time 시간에 다 익은 토마토의 수, time: 토마토가 전부 익는데 걸리는 시간
+    int len = q.size(), time = 0;
+    // c: queue의 front, c_: c에 인접한 좌표
+    coord c, c_;
 
-			if ((togo.front().x > 0) && (t[togo.front().y][togo.front().x - 1] == 0))
-			{
-				done[0]++;
-				t[togo.front().y][togo.front().x - 1] = 1;
-				togo.push(coord(togo.front().y, togo.front().x - 1));
-			}
-			if ((togo.front().y > 0) && (t[togo.front().y - 1][togo.front().x] == 0))
-			{
-				done[0]++;
-				t[togo.front().y - 1][togo.front().x] = 1;
-				togo.push(coord(togo.front().y - 1, togo.front().x));
-			}
-			if ((togo.front().x < w - 1) && (t[togo.front().y][togo.front().x + 1] == 0))
-			{
-				done[0]++;
-				t[togo.front().y][togo.front().x + 1] = 1;
-				togo.push(coord(togo.front().y, togo.front().x + 1));
-			}
-			if ((togo.front().y < h - 1) && (t[togo.front().y + 1][togo.front().x] == 0))
-			{
-				done[0]++;
-				t[togo.front().y + 1][togo.front().x] = 1;
-				togo.push(coord(togo.front().y + 1, togo.front().x));
-			}
+    // 인접 칸에 영향을 미칠 수 있는 토마토가 존재한다면
+    while(!q.empty()) {
+        // q에서 좌표를 하나 가져온 뒤
+        c = q.front();
+        q.pop();
+        // 인접 칸의 토마토를 익힐 수 있다면 익힌 칸을 q에 push
+        for (auto a : add) {
+            // c에 인접한 칸 c_에 대해
+            c_ = c + a;
+            // c_가 상자 밖의 좌표거나 안에 든 게 설익은 토마토가 아닐 경우 continue
+            if (!valid(c_) || box[c_.n][c_.m]) continue;
 
-			//이 토마토의 영향력이 다했으므로 큐에서 제거한다
-			togo.pop();
-		}
+            // 설익은 토마토를 익은 토마토로 바꾸고 설익은 토마토의 수를 1 줄인다
+            cnt -= (box[c_.n][c_.m] = 1);
+            // 다 익은 토마토의 좌표를 q에 push
+            q.push(c_);
+        }
+        
+        // time 시간에 다 익은 토마토를 모두 탐색했다면 time과 len을 갱신
+        if (!--len) time += (bool)(len = q.size());
+    }
 
-		//시간이 한 번 지났으므로 이를 저장
-		time++;
-	}
+    // 토마토가 다 익었다면 다 익는데 걸리는 시간을, 아니라면 -1을 반환    
+    return !cnt ? time : -1;
+}
 
-	//상자 안의 토마토가 전부 익었다면 걸린 시간을 출력
-	//그렇지 않다면 -1을 출력
-	if (done[0] == w * h) printf("%d\n", time);
-	else printf("-1\n");
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    // for문에서 사용할 변수
+    int n, m;
+
+    // 상자의 크기와 각 칸의 상태를 입력받은 뒤
+    cin >> M >> N;
+    FOR(n, 0, N) FOR(m, 0, M) {
+        cin >> box[n][m];
+        // 익은 토마토가 있는 칸을 q에 push
+        if (box[n][m] == 1) q.push({n, m});
+        // 설익은 토마토의 수를 저장
+        cnt += !box[n][m];
+    }
+
+    // 입력받은 그래프를 탐색한 결과를 출력
+    cout << bfs() << '\n';
 
     return 0;
 }
