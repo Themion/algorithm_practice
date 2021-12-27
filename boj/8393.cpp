@@ -1,14 +1,10 @@
 #include <cstdio>
 
-int main()
-{
-	//num에 숫자를 입력받은 뒤
-	//ret에 1부터 num까지의 총합을 저장한다
-	int num, ret = 0;
-	scanf("%d", &num);
-
-	for (int i = 1; i <= num; i++)ret += i;
-	printf("%d\n", ret);
+int main() {
+    // 1부터 n까지 더하는 공식은 n * (n * 1) / 2이다
+    int n;
+    scanf("%d", &n);
+    printf("%d\n", n * (n + 1) / 2);
 
     return 0;
 }
