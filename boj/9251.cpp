@@ -1,30 +1,27 @@
 #include <cstdio>
 
-//a, b: 입력받을 두 문자열
-char a[1001], b[1001];
-//len[i + 1][j + 1]: a[0:i]와 b[0:j]의 LCS
-short len[1001][1001];
+#define MAX_LEN 1000
 
-int main()
-{
-    //aidx, bidx: a와 b의 길이
-    int aidx = 0, bidx = 0;
-    //a와 b를 입력받는다
-    do { scanf("%c", &a[aidx]); } while (a[aidx++] != '\n');
-    do { scanf("%c", &b[bidx]); } while (b[bidx++] != '\n');
-    //a와 b의 길이에 맞게 각 인덱스를 1씩 빼 준다
-    aidx--; bidx--;
+short max(short a, short b) { return a > b ? a : b; }
 
-    //a와 b에 대해 동적 계획법으로 LCS를 구한다
-    for (int i = 0; a[i] != '\n'; i++) for (int j = 0; b[j] != '\n'; j++)
-    {
-        len[i + 1][j + 1] = len[i][j] + (a[i] == b[j]);
-        if (len[i + 1][j + 1] < len[i + 1][j]) len[i + 1][j + 1] = len[i + 1][j];
-        if (len[i + 1][j + 1] < len[i][j + 1]) len[i + 1][j + 1] = len[i][j + 1];
-    }
+int main() {
+    // A, B: 입력받을 두 문자열
+    char A[MAX_LEN + 1], B[MAX_LEN + 1];
+    // a, b: A와 B를 탐색하기 위한 인덱스
+    int a, b;
+    // len[a % 2][b + 1]: A[0:a]와 B[0:b]의 LCS
+    short len[2][MAX_LEN + 1] = {{ 0, }};
 
-    //이렇게 구한 LCS중 가장 큰 값을 출력한다
-    printf("%d\n", len[aidx][bidx]);
+    // A와 B를 입력받는다
+    scanf("%s\n%s", A, B);
+
+    // A와 B에 대해 동적 계획법으로 LCS의 길이를 구한다
+    for (a = 0; A[a]; a++) for (b = 0; B[b]; b++)
+        len[!(a % 2)][b + 1] = max(len[a % 2][b] + (A[a] == B[b]), 
+                                max(len[!(a % 2)][b], len[a % 2][b + 1]));
+
+    // 구한 LCS의 최댓값을 출력
+    printf("%hd\n", len[a % 2][b]);
 
     return 0;
 }

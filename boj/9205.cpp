@@ -1,49 +1,59 @@
 #include <cstdio>
 #include <queue>
 
-// a - b의 절댓값을 계산
-int abs(int a, int b) { return a > b ? a - b : b - a; }
-//두 좌표 간의 맨하탄 거리를 계산
-int dist(int node[][2], int a, int b) 
-{ return abs(node[a][0], node[b][0]) + abs(node[a][1], node[b][1]); }
+using namespace std;
 
-bool boj_9205()
-{
-    // f: q.front()를 바로 접근하지 않고 변수에 저장
-    // node: 집, 편의점, 송도 페스티벌의 좌표
-    int N, f, node[102][2];
-    // visit[i]: i번째 노드에 방문했다면 true, 아니라면 false
-    bool visit[102] = { false, };
+typedef pair<short, short> crd;
+
+#define MAX_N 100
+#define MAX_DIST 1000
+#define _x first
+#define _y second
+
+int abs(short num) { return (int)(num >= 0 ? num : -num); }
+// 두 좌표 a와 b의 맨하탄 거리
+int dist(crd a, crd b) { return abs(a._x - b._x) + abs(a._y - b._y); }
+
+bool test_case() {
+    // visit[i]: i번 노드에 방문했다면 true, 아니라면 false
+    bool visit[MAX_N + 2] = { true, };
+    // 노드의 개수
+    int N;
+    // 각 노드의 좌표
+    crd node[MAX_N + 2];
     // bfs에 사용할 큐
-    std::queue<int> q;
+    queue<int> q({0});
 
+    // 시작 노드와 도착 노드를 제외한 노드의 수를 입력받은 뒤
     scanf("%d", &N); N += 2;
+    // 각 노드의 좌표를 입력받는다
     for (int i = 0; i < N; i++)
-        scanf("%d %d", &(node[i][0]), &(node[i][1]));
+        scanf("%hd %hd", &(node[i]._x), &(node[i]._y));
 
-    q.push(0); visit[0] = true; // 먼저 q에 집을 push한 뒤
-
-    while(!q.empty())           // q에 존재하는 모든 노드에 대해
-    {
-        // 방문하지 않았으면서 방문 가능한 편의점을 q에 push
-        f = q.front(); q.pop();
-        for (int i = 0; i < N; i++)
-            if (!visit[i] && dist(node, i, f) <= 1000)
-            {
-                // 이 떄 q에 push될 노드 중 송도페스티벌이 있다면 true를 반환
-                if (i == N - 1) return true;
-                q.push(i); visit[i] = true;
-            }
+    // 도착 노드에 도달할 때까지 bfs 실행
+    while (!q.empty() && !visit[N + 1]) {
+        // 모든 노드에 대해
+        for (int i = 1; i < N; i++) {
+            // 방문한 적 있는 노드거나
+            // 현재 노드와의 거리가 MAX_DIST 이상이라면 continue
+            if (visit[i] || dist(node[q.front()], node[i]) > MAX_DIST)
+                continue;
+            // 노드 i를 q에 push한 뒤 방문한 적 있음을 표시
+            q.push(i);
+            visit[i] = true;
+        }
+        // 불필요한 현재 노드를 pop
+        q.pop();
     }
 
-    return visit[N - 1];    // 송도페스티벌에 방문했는지를 반환 
+    // N - 1번 노드, 즉 도착 노드에 방문한 적 있는지 여부를 반환
+    return visit[N - 1];
 }
 
-int main()
-{
+int main() {
     int T;
-    scanf("%d", &T);
-    while (T--) printf("%s", boj_9205() ? "happy\n" : "sad\n");
-
+    // 테스트 케이스의 수를 입력받아 각 테스트 케이스를 실행
+    for (scanf("%d", &T); T--; )
+        printf("%s\n", test_case() ? "happy" : "sad");
     return 0;
 }

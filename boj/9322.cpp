@@ -1,50 +1,44 @@
 #include <iostream>
 #include <string>
-#include <vector>
+#include <unordered_map>
 
 using namespace std;
 
-// 문장에 들어가는 단어의 수는 약 1000개이므로
-// 시간복잡도가 O(N^2)인 코드로도 통과할 수 있음
-void baekjoon_9322(int N)
-{
-    // key1: 제1 공개키, key2: 제2 공개키, code: 암호문
-    vector<string> key1(N), key2(N), code(N);
+#define MAX_N 1000
 
-    // 공개키와 암호문을 단어의 배열로 저장
-    for (int i = 0; i < N; i++) cin >> key1[i];
-    for (int i = 0; i < N; i++) cin >> key2[i];
-    for (int i = 0; i < N; i++) cin >> code[i];
+void test_case() {
+    // N: 단어의 개수, ord[i]: i번째 암호문의 복호문에서의 위치
+    int N, ord[MAX_N] = { 0, };
+    // str: 암호 순서를 계산할 때 사용할 변수, code: 암호문
+    string str, code[MAX_N];
+    // m[i]: i번째 암호 예제
+    unordered_map<string, int> m;
 
-    // 제1 공개키의 각 단어가 제2 공개키의 j번째 단어와 일치할 때
-    for (int i = 0; i < N; i++) for (int j = 0; j < N; j++)
-        if (key1[i] == key2[j])
-        {
-            // j번째 암호문의 단어를 제1 공개키의 순서대로 출력
-            cout << code[j] << ' ';
-            break;
-        }
-
-    // 줄바꿈 문자를 출력하여 평문의 출력을 마친다
-    cout << '\n';
+    // 단어의 개수를 입력받은 뒤
+    cin >> N;
+    // 암호 예제의 각 단어 순서를 저장한 뒤
+    for (int i = 0; i < N; i++) {
+        cin >> str;
+        m[str] = i;
+    }
+    // 복호 예제를 이용해 암호문 -> 복호문 순서를 저장
+    for (int i = 0; i < N; i++) {
+        cin >> str;
+        ord[i] = m[str];
+    };
+    // 암호문을 복호문 순서로 저장한 뒤 순서대로 출력
+    for (int i = 0; i < N; i++) cin >> code[ord[i]];
+    for (int i = 0; i < N; i++) cout << code[i] << (i < N - 1 ? ' ' : '\n');
 }
 
-int main()
-{
-    //cin, cout 사용 시 필히 사용할 것
+int main() {
+    // 입출력 속도 향상
     ios::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int tc, N;
-    cin >> tc;
-    // 각 테스트 케이스마다
-    while (tc--)
-    {
-        // 문장의 단어 수를 입력받은 뒤 테스트 케이스 실행
-        cin >> N;
-        baekjoon_9322(N);
-    }
-
+    int T;
+    // 테스트 케이스의 수를 입력받고 각 테스트 케이스를 실행
+    for (cin >> T; T--; ) test_case();
     return 0;
 }

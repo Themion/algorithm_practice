@@ -1,41 +1,29 @@
 #include <cstdio>
 
-int main()
-{
-    //괄호 문자열을 입력받을 공간
+bool test_case() {
+    // 괄호의 깊이가 음수가 아니라면 true, 음수라면 false
+    bool ret = true;
+    // 문자열을 한 글자씩 입력받을 공간
     char buf;
-    //tc: 테스트 케이스의 수
-    //cnt: 몇개의 괄호가 열려있는지를 카운트한다
-    int tc, cnt;
+    // 괄호의 깊이
+    int depth = 0;
 
-    scanf("%d\n", &tc);
-
-    for (int t = 0; t < tc; t++)
-    {
-        //맨 처음엔 어떤 괄호도 열려있지 않다
-        cnt = 0;
-
-        //괄호 문자열을 문자 단위로 입력받아서
-        while (scanf("%c", &buf) == 1)
-        {
-            //괄호가 얼마나 열려있는지를 계속해서 갱신한다
-            if      (buf == '(') cnt++;
-            else if (buf == ')') cnt--;
-            else if (buf == '\n') break;
-
-            //어느 시점에서 열린 괄호의 수가 음수라면 break
-            if (cnt < 0) break;
-        }
-
-        //문자열이 끝났을 때 열린 괄호의 수가 0이 아니라면 NO를 출력
-        if(cnt != 0)
-        {
-            while (buf != '\n') scanf("%c", &buf);
-            printf("NO\n");
-        }
-        //그렇지 않다면 YES를 출력
-        else printf("YES\n");
+    // 괄호 문자열의 각 글자에 대해
+    while (scanf("%c", &buf) && buf != '\n') {
+        // 괄호 문자열의 깊이를 갱신한 뒤
+        (buf == '(') ? depth++ : depth--;
+        // 깊이가 음수였던 적이 있는지를 ret에 저장
+        ret &= (depth >= 0);
     }
 
+    // 괄호의 깊이가 음수였던 적이 없고 현재 깊이가 0이라면 현재 문자열은 VPS이다
+    // 현재 문자열이 VPS인지 여부를 반환
+    return ret && !depth;
+}
+
+int main() {
+    int T;
+    // 테스트 케이스의 수를 입력받고 각 테스트 케이스를 실행
+    for (scanf("%d%*c", &T); T--;) printf("%s\n", test_case() ? "YES" : "NO");
     return 0;
 }

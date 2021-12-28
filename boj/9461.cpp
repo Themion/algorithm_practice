@@ -1,26 +1,21 @@
 #include <cstdio>
 
-//수열을 저장할 공간
-long long arr[100] = {1, 1, 1, 2, 2};
+#define MAX_N 100
 
-int main()
-{
-    //tc: 테스트 케이스의 수, input: 수를 입력받을 공간
-    //max: 현재 구한 수열 중 가장 큰 수의 인덱스
-    int tc, input, max = 4;
+int main() {
+    // T: 테스트 케이스의 수, N: 테스트 케이스의 입력
+    int T, N;
+    // 파도반 수열을 저장할 공간
+    long long arr[MAX_N] = {1, 1, 1, 2, 2};
 
-    //테스트 케이스를 입력받는다
-    scanf("%d", &tc);
+    // 범위 내의 파도반 수열을 완성한 뒤
+    for (int i = 5; i < MAX_N; i++) arr[i] = arr[i - 1] + arr[i - 5];
 
-    //각 테스트 케이스마다
-    while (tc--)
-    {
-        //출력할 수의 인덱스를 입력받은 뒤
-        scanf("%d", &input);
-        //해당 인덱스가 비어있다면 그 인덱스까지 모두 채운 다음
-        while (max < input) arr[max++] = arr[max - 1] + arr[max - 5];
-        //해당 인덱스의 수를 출력한다
-        printf("%lld\n", arr[input - 1]);
+    // 테스트 케이스의 수를 입력받고 각 테스트 케이스마다
+    for (scanf("%d", &T); T--; ){
+        // 순서를 입력받고 해당 순서의 파도반 수열을 출력
+        scanf("%d", &N);
+        printf("%lld\n", arr[N - 1]);
     }
 
     return 0;
