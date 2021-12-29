@@ -1,20 +1,17 @@
 #include <cstdio>
 
-int main()
-{
-	//점수 score를 입력받아 ret에 더한 뒤 평균을 구한다
-	//이때 점수는 항상 40점 이상인 5의 배수이다
-	int score, ret = 0;
+int main() {
+    // score: 각 학생의 점수, ans: 점수의 합
+    int score, ans = 0;
 
-	for (int i = 0; i < 5; i++)
-	{
-		scanf("%d", &score);
-		if (score < 40) score = 40;
-		ret += score;
-	}
+    // 점수를 다섯번 입력받아 각 점수와 40 중 더 큰 값을 ans에 더한다
+    for (int i = 0; i < 5; i++) {
+        scanf("%d", &score);
+        ans += (score > 40) ? score : 40;
+    }
 
-	//점수 다섯의 평균을 출력한다
-	printf("%d\n", ret / 5);
+    // ans를 5로 나눠 얻은 점수의 평균을 출력
+    printf("%d\n", ans / 5);
 
     return 0;
 }
