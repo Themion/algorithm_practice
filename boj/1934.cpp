@@ -1,10 +1,7 @@
 #include <cstdio>
 
 // A와 B의 최대공약수를 반환
-int gcd(int A, int B) {
-    if (!B) return A;
-    return (A > B) ? gcd(B, A % B) : gcd(A, B % A);
-}
+int gcd(int A, int B) { return B ? gcd(B, A % B) : A; }
 
 // A와 B의 최소공배수는 A * B / (A와 B의 최대공약수)이다
 int test_case() {

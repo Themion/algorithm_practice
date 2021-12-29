@@ -1,10 +1,7 @@
 #include <cstdio>
 
 // 유클리드 호제법을 이용해 a와 b의 최대공약수를 계산
-int gcd(int a, int b) {
-    if (!b) return a;
-    return ((a > b) ? gcd(b, a % b) : gcd(a, b % a));
-}
+int gcd(int a, int b) { return b ? gcd(b, a % b) : a; }
 
 int main() {
     // a, b: 입력받을 두 수, c: a와 b의 최대공약수
