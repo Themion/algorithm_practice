@@ -1,20 +1,13 @@
 #include <cstdio>
-#include <string>
 
-//고양이 모습을 하드코딩한다
-std::string str[4] = {"\\    /\\",
+int main() {
+    // 고양이 모습을 하드코딩
+    char str[4][9] = {"\\    /\\",
                       " )  ( \')",
                       "(  /  )",
                       " \\(__)|"};
-
-int main()
-{
-    //str을 출력한다
-    for(int i = 0; i < 4; i++)
-    {
-        for (auto j : str[i]) printf("%c", j);
-        printf("\n");
-    }
+    // str을 출력한다
+    for(int i = 0; i < 4; i++) printf("%s\n", str[i]);
 
     return 0;
 }

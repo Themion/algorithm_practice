@@ -1,42 +1,34 @@
-#include <cstdio>
-#include <algorithm>
-#include <vector>
+#include <iostream>
 
 using namespace std;
 
-//숫자 카드에 적힌 수를 저장할 배열
-vector<int> card;
+#define MAX 10000000
 
-int main()
-{
-    //n, buf: 숫자 카드의 개수, buf: 각 숫자 카드의 수
-    int n, buf;
-    //upper_bound, lower_bound의 결과값을 저장할 공간
-    vector<int>::iterator upper, lower;
+// cnt[i + MAX]: 숫자카드 i의 개수
+int cnt[2 * MAX + 1] = { 0, };
 
-    scanf("%d", &n);
-    for (int i = 0; i < n; i++)
-    {
-        scanf("%d", &buf);
-        card.push_back(buf);
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    // N: 가진 숫자카드의 개수, M: 찾을 숫자카드의 개수
+    // i: 찾을 각각의 숫자카드의 수
+    int N, M, i;
+
+    // 가진 숫자카드를 각각 입력받아 그 개수를 cnt에 저장
+    for (cin >> N; N--; ) {
+        cin >> i;
+        cnt[i + MAX]++;
     }
-
-    //입력받은 card는 정렬되어 있지 않아 이분 탐색을 사용할 수 없다
-    sort(card.begin(), card.end());
-
-    scanf("%d", &n);
-    for (int i = 0; i < n; i++)
-    {
-        //개수를 찾을 숫자 카드의 수를 입력받은 뒤
-        scanf("%d", &buf);
-        //buf가 처음 나온 위치와 
-        //그 이후로 buf가 아닌 수가 처음 나온 위치를 찾은 뒤
-        upper = upper_bound(card.begin(), card.end(), buf);
-        lower = lower_bound(card.begin(), card.end(), buf);
-        //둘의 차를 출력한다
-        printf("%d ", (int)(upper - lower));
+    // 찾을 숫자카드를 각각 입력받아 그 개수를 출력
+    for (cin >> M; M--; ) {
+        cin >> i;
+        cout << cnt[i + MAX] << ' ';
     }
-    printf("\n");
+    // 개행 문자를 출력해 출력을 종료
+    cout << '\n';
 
     return 0;
 }

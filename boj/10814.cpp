@@ -1,47 +1,55 @@
 #include <iostream>
-#include <algorithm>
 #include <string>
 
 using namespace std;
 
-//회원의 정보를 저장할 클래스
-class Person
-{
-public:
-    int age = 0;        //회원의 나이
-    int idx = 100001;   //회원의 가입 순서
-    string name = "";   //회원의 이름
+#define MAX 200
+
+// 나이가 같은 회원의 이름을 링크드 리스트 꼴로 저장
+struct person {
+    // 회원의 이름
+    string name = "";
+    // 링크드 리스트의 다음 항목
+    person* next = NULL;
 };
 
-int n;
-Person p[100000];
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-//회원의 나이 순으로, 나이가 같다면 가입일 순으로 크기 비교
-bool operator< (Person a, Person b)
-{
-    if (a.age != b.age) return a.age < b.age;
-    return a.idx < b.idx;
-}
+    // N: 회원의 수, age: 각 회원의 나이
+    int N, age;
+    // p[i]: 나이가 i인 회원의 링크드 리스트, it[i]: p[i]를 순회하기 위한 iterator
+    person p[MAX + 1], *it[MAX + 1];
 
-int main()
-{
-	//cin, cout 사용 시 필히 사용할 것
-	ios::sync_with_stdio(false);
-	cin.tie(NULL);
-	cout.tie(NULL);
+    // it 초기화
+    for (int i = 1; i <= MAX; i++) it[i] = &p[i];
 
-    cin >> n;
-    for (int i = 0; i < n; i++)
-    {
-        cin >> p[i].age >> p[i].name;
-        p[i].idx = i;
+    // 회원 정보 N개를 입력받는다
+    for (cin >> N; N--; ) {
+        // 나이를 입력받은 뒤
+        cin >> age;
+        // 입력받을 공간을 만들고
+        it[age] = (it[age]->next = new person);
+        // 만든 공간에 이름을 입력
+        cin >> it[age]->name;
     }
 
-    //Person 클래스의 크기 비교 연산자는 위에서 정의하였다
-    std::sort(p, p + n);
+    // 회원을 나이별로 출력
+    for (int i = 1; i <= MAX; i++) {
+        // it을 초기화한 뒤
+        it[i] = &p[i];
 
-    //정렬된 순으로 회원 목록을 출력
-    for (int i = 0; i < n; i++) cout << p[i].age << ' ' << p[i].name << '\n';
+        // 나이가 i인 모든 회원을 출력
+        while (it[i]->next != NULL) {
+            // 각 회원의 이름이 저장된 공간을 가져온 뒤
+            it[i] = it[i]->next;
+            // 각 회원의 나이와 이름을 출력
+            cout << i << ' ' << it[i]->name << '\n';
+        }
+    }
 
     return 0;
 }
