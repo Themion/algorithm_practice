@@ -1,16 +1,14 @@
 #include <cstdio>
 
-int main()
-{
-	//두 수 a, b 사이의 사칙연산 결과값을 출력
-	int a, b;
-	scanf("%d %d", &a, &b);
+int main() {
+    // 두 수 A, B 사이의 사칙연산 결과를 각각 출력
+    int A, B;
+    scanf("%d %d", &A, &B);
+    printf("%d\n", A + B);
+    printf("%d\n", A - B);
+    printf("%d\n", A * B);
+    printf("%d\n", A / B);
+    printf("%d\n", A % B);
 
-	printf("%d\n", a + b);
-	printf("%d\n", a - b);
-	printf("%d\n", a * b);
-	printf("%d\n", a / b);
-	printf("%d\n", a % b);
-
-	return 0;
+    return 0;
 }

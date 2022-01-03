@@ -1,22 +1,16 @@
 #include <cstdio>
 
-//피보나치 수는 세 개의 공간만 가지고 계산이 가능하다
-int fib[3];
+#define MAX_N 20
 
-int main()
-{
-    //n번째 피보나치 수를 계산할 때 쓸 변수
-    int n;
+int main() {
+    // fib[i % 2]: i번째 피보나치 수, n: 구할 피보나치 수의 순서
+    int fib[2] = { 0, 1 }, n;
+
+    // n을 입력받은 뒤 n번째 피보나치 수까지 계산
     scanf("%d", &n);
-
-    //1번째 피보나치 수는 1이다
-    fib[1] = 1;
-    //2번째 수부터 차례로 계산한다
-    for (int i = 2; i <= n; i++) 
-        fib[i % 3] = fib[(i - 1) % 3] + fib[(i - 2) % 3];
-
-    //n번째 피보나치 수를 출력한다
-    printf("%d\n", fib[n % 3]);
+    for (int i = 2; i <= n; i++) fib[i % 2] += fib[!(i % 2)];
+    // n번째 피보나치 수를 출력
+    printf("%d\n", fib[n % 2]);
 
     return 0;
 }

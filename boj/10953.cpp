@@ -1,23 +1,15 @@
 #include <cstdio>
 
-int main()
-{
-	//a, b : 입력받은 두 수를 저장할 공간
-	//times : 반복 횟수
-	int a, b, times; 
+int main() {
+    // T: 테스트 케이스의 수, A, B: 더할 두 수
+    int T, A, B;
 
-	//반복 횟수를 입력받는다
-	scanf("%d", &times);
-
-	//times가 0이 될 때까지
-	while (times > 0)
-	{
-		//times를 1 뺀 뒤
-		times -= 1;
-		//a, b를 입력받고 a+b를 출력
-		scanf("%d,%d", &a, &b);
-		printf("%d\n", a + b);
-	}
+    // 테스트 케이스의 수를 입력받은 뒤 각 테스트 케이스에 대해
+    for (scanf("%d", &T); T--; ) {
+        // 두 수 A와 B를 입력받아 그 합을 출력
+        scanf("%d,%d", &A, &B);
+        printf("%d\n", A + B);
+    }
 
     return 0;
 }

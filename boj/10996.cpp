@@ -1,23 +1,16 @@
 #include <cstdio>
 
-int main()
-{
-	//도형의 높이를 입력받는다
-	int num;
-	scanf("%d", &num);
+int main() {
+    int N;
 
-	//각 줄에 대해서
-	for (int i = 0; i < num * 2; i++)
-	{
-        //해당 줄이 짝수 줄이라면 ' ' 먼저, 홀수 줄이라면 '*' 먼저
-		for (int j = i % 2; j < num + i % 2; j++)
-        {
-            //' '와 '*'을 num회 번갈아 출력한다
-            if (j % 2) printf(" ");
-            else       printf("*");
-        }
-		printf("\n");
-	}
+    // 도형의 높이를 입력받은 뒤
+    scanf("%d", &N);
+    // '*'과 ' '을 번갈아 출력
+    for (int i = 0; i < N * 2; i++) {
+        for (int j = 0; j < N; j++) printf("%c", ((i + j) % 2) ? ' ' : '*');
+        // 문자를 N개 출력할 때마다 줄바꿈을 출력
+        printf("\n");
+    }
 
-	return 0;
+    return 0;
 }

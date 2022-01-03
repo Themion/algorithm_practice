@@ -1,28 +1,26 @@
-#include <cstdio>
+#include <iostream>
 
-//str[0]은 배열의 크기, str[i]는 i가 등장한 횟수
-int str[10001];
+using namespace std;
 
-int main()
-{
-	//들어온 값을 저장할 임시 변수
-	int temp;
+#define MAX 10000
 
-	//배열의 크기를 입력받는다
-	scanf("%d", &str[0]);
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-	//배열의 모든 수에 대해
-	for (int i = 0; i < str[0]; i++)
-	{
-		//배열의 i번째 수를 입력받은 뒤
-		scanf("%d", &temp);
-		//해당 수가 등장한 횟수를 1 늘린다
-		str[temp] += 1;
-	}
+    // N: 입력받을 수의 개수, i: 입력받을 각 수, cnt[i]: 수 i가 나온 개수
+    int N, i, cnt[MAX + 1] = { 0, };
 
-	//1부터 10000까지의 모든 수에 대해 그 수를 등장한 횟수만큼 출력한다
-	for (int i = 1; i <= 10000; i++) 
-        for (int j = 0; j < str[i]; j++) printf("%d\n", i);
+    // 수를 N번 입력받아 cnt에 나온 횟수를 저장
+    for (cin >> N; N--; ) {
+        cin >> i;
+        cnt[i]++;
+    }
+    // 각 수를 나온 횟수만큼 출력
+    for (N = 0; N <= MAX; N++) for (i = 0; i < cnt[N]; i++)
+        cout << N << '\n';
 
     return 0;
 }
