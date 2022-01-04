@@ -1,31 +1,24 @@
 #include <cstdio>
 
-//파스칼의 삼각형을 저장할 공간
-short tri[2][1000];
+#define MAX_N 1000
+#define MOD 10007
 
-int main()
-{
-	//n, k: 이항계수 (n k)를 구할 때 쓸 변수
-	int n, k;
-	//i % 2, (i - 1) % 2를 축약시킴
-	bool trig;
-	scanf("%d %d", &n, &k);
+int main() {
+    // N, K: 이항계수 상수
+    int N, K;
+    // ans[n][k]: 이항계수 nCk
+    short ans[2][MAX_N + 1] = {{ 0, }};
 
-	//삼각형의 각 층에 대해
-	for (int i = 0; i <= n; i++)
-	{
-		trig = i % 2;
-		//삼각형의 두 옆변은 반드시 1이다
-		tri[trig][0] = 1;
-		tri[trig][i] = 1;
+    // 문제의 조건을 입력받은 뒤 파스칼의 삼각형을 이용해 이항 계수를 계산
+    scanf("%d %d", &N, &K);
+    for (int n = 1; n <= N; n++) {
+        ans[n % 2][0] = ans[n % 2][n] = 1;
+        for (int k = 1; k < n; k++)
+            ans[n % 2][k] = (ans[!(n % 2)][k] + ans[!(n % 2)][k - 1]) % MOD;
+    }
 
-		//삼각형 안의 값을 채운다
-		for (int j = 1; j < i; j++)
-			tri[trig][j] = (tri[!trig][j - 1] + tri[!trig][j]) % 10007;
-	}
+    // 이항계수를 출력
+    printf("%hd\n", ans[N % 2][K]);
 
-	//이항계수 값을 출력한다
-	printf("%d\n", tri[n % 2][k]);
-
-	return 0;
+    return 0;
 }

@@ -1,21 +1,21 @@
 #include <cstdio>
 
-int main()
-{
-	//n, k : 입력받을 두 수
-	//ret : 이항 계수를 저장할 공간
-	int n, k, ret = 1;
-	scanf("%d %d", &n, &k);
+#define MAX_N 10
 
-	//빠른 계산을 위해 k를 수정한다
-	if (n - k < k) k = n - k;
+int main() {
+    // N, K: 이항계수 상수, ans[n][k]: 이항계수 nCk
+    int N, K, ans[MAX_N + 1][MAX_N + 1] = {{ 0, }};
 
-	//k번만큼 분자 부분, 즉 n * (n - 1) * ... * (n - k + 1)을 곱해준다
-	for (int i = 0; i < k; i++) ret *= n--;
-	//k번만큼 분모 부분, 즉 1 * 2 * ... * k를 곱해준다
-	for (int i = 1; i <= k; i++) ret /= i;
+    // 문제의 조건을 입력받은 뒤 파스칼의 삼각형을 이용해 이항 계수를 계산
+    scanf("%d %d", &N, &K);
+    for (int n = 1; n <= N; n++) {
+        ans[n][0] = ans[n][n] = 1;
+        for (int k = 1; k < n; k++)
+            ans[n][k] = ans[n - 1][k] + ans[n - 1][k - 1];
+    }
 
-	printf("%d\n", ret);
-    
+    // 이항계수를 출력
+    printf("%d\n", ans[N][K]);
+
     return 0;
 }

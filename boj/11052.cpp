@@ -1,25 +1,26 @@
 #include <cstdio>
 
-//arr[i]: i장의 카드를 살 때 필요한 금액의 최댓값
-int arr[1001];
+#define MAX_N 1000
 
-int main()
-{
-    //구매하고자 할 카드의 개수
-    int n;
-    scanf("%d", &n);
+int max(int a, int b) { return a > b ? a : b; }
 
-    //arr[i]값은 P(i)보다 크거나 같다
-    for (int i = 1; i <= n; i++)
-        scanf("%d", &arr[i]);
+int main() {
+    // N: 구매할 카드의 개수, P[i]: 카드를 i장 구매할 때의 가격의 최댓값
+    int N, P[MAX_N + 1] = { 0, };
 
-    //arr[1]은 반드시 P(1)이다
-    //arr[2]부터는 arr[i] = arr[j] + arr[i + j]로 나타낼 수 있다
-    for (int i = 2; i <= n; i++) for (int j = 1; j <= i / 2; j++)
-        if (arr[i] < arr[j] + arr[i - j]) arr[i] = arr[j] + arr[i - j];
+    // 구매할 카드의 개수를 입력받은 뒤
+    scanf("%d", &N);
+    // 각 카드의 개수에 대해
+    for (int n = 1; n <= N; n++) {
+        // 카드가 n개 들어있는 카드팩의 가격을 입력받은 뒤
+        scanf("%d", P + n);
+        // 카드가 i개와 n - i개 들어있는 카드팩을 각각 구매할 때의 가격과 비교해
+        // 더 큰 값으로 갱신
+        for (int i = 1; i <= n / 2; i++) P[n] = max(P[n], P[i] + P[n - i]);
+    }
 
-    //arr[n]을 출력한다
-    printf("%d\n", arr[n]);
+    // 카드를 N개 구매할 때의 가격의 최댓값을 출력
+    printf("%d\n", P[N]);
 
     return 0;
 }

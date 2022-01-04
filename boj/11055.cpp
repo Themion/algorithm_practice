@@ -1,33 +1,35 @@
 #include <cstdio>
 
-// a: 입력받은 배열, sum[i]: i에서 끝나는 가장 큰 증가 부분수열
-int a[1000], sum[1000];
+#define MAX_N 1000
 
-int main()
-{
-    int n, ans = 0;
-    // 배열을 입력받는다
-    scanf("%d", &n);
-    for (int i = 0; i < n; i++) scanf("%d", &a[i]);
+int max(int a, int b) { return a > b ? a : b; }
 
-    // 배열의 각 성분에 대해
-    for (int i = 0; i < n; i++)
-    {
-        // 부분수열은 항상 a[i]에서 끝나므로 sum[i]의 최솟값은 a[i]이다
-        sum[i] = a[i];
+int main() {
+    // sum[i]: i에서 끝나는 가장 큰 증가 부분 수열, ans: 각 부분 수열의 합의 최댓값
+    int sum[MAX_N] = { 0, }, ans = 0;
+    // N: 수열의 길이, A: 수열의 각 성분
+    short N, A[MAX_N] = { 0, };
+
+    // 수열의 크기를 입력받은 뒤 수열의 각 성분에 대해
+    scanf("%hd", &N);
+    for (int i = 0; i < N; i++) {
+        // 수열의 i번째 성분을 입력받은 뒤
+        scanf("%hd", A + i);
+        // i에서 끝나는 부분 수열에는 { A[i] } 또한 포함하므로
+        // sum[i]에 A[i]를 넣어 최솟값을 설정
+        sum[i] = A[i];
         
-        // i 이전 성분에 대해
-        for (int j = 0; j < i; j++)
-            // j에서 끝나는 부분수열 중 a[i]를 더할 수 있는 부분수열이 있다면
-            // 그렇게 한다
-            if ((sum[i] <= sum[j] + a[i]) && (a[i] > a[j]))
-                sum[i] = sum[j] + a[i];
-        // ans 갱신
-        if (ans < sum[i]) ans = sum[i];
+        // j < i이고 A[j] < A[i]인 j에서 끝나는 증가 부분 수열 중 가장 큰 부분 수열에
+        // A[i]를 추가해 i번째 성분에서 끝나는 가장 큰 부분 수열을 만든다
+        for (int j = 0; j < i; j++) if (A[j] < A[i])
+            sum[i] = max(sum[i], sum[j] + (int)A[i]);
+
+        // 부분 수열의 합의 최댓값을 ans에 저장
+        ans = max(ans, sum[i]);
     }
 
     // ans를 출력한다
-    printf("%hd\n", ans);
+    printf("%d\n", ans);
 
     return 0;
 }
