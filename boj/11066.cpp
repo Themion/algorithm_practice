@@ -16,7 +16,7 @@ int test_case() {
     cin >> K;
     for (int i = 1; i <= K; i++) {
         cin >> C[i][i];
-        sum[i] += sum[i - 1];
+        sum[i] = sum[i - 1] + C[i][i];
     }
 
     // 각 위치에서 파일을 하나씩 합치면서 최솟값을 계산
