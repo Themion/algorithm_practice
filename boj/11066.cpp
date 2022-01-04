@@ -1,51 +1,52 @@
-#include <cstdio>
-#include <vector>
+#include <iostream>
 
-int ret[501][501], sum[501];
+using namespace std;
 
-int main()
-{
-    //tc: 테스트 케이스의 수, size: 각 테스트 케이스에서 파일의 수
-	int tc, size;
-	scanf("%d", &tc);
+#define MAX_K 500
+#define INF 0x3f3f3f3f
 
-    //각 테스트 케이스마다
-	while (tc--)
-	{
-        //파일의 수와 각 파일의 크기를 입력받는다
-		scanf("%d", &size);
-		for (int i = 1; i <= size; i++)
-		{
-			scanf("%d", &ret[i][i]);
-            //1번 파일부터 i번 파일까지의 합을 sum[i]에 저장한다
-			sum[i] = sum[i - 1] + ret[i][i];
-		}
+int min(int a, int b) { return a < b ? a : b; }
 
-        //연속한 파일을 두 개 이상 결합하는 경우에 대해
-		for (int s = 1; s <= size; s++)
-		{
-            //연속된 파일의 시작점을 i로 본다면
-			for (int i = 1; i + s <= size; i++)
-			{
-                //우선 불가능한 경우를 집어넣고
-				ret[i][i + s] = 0x3f3f3f3f;
+int test_case() {
+    // K: 파일의 수, C[i][j]: i번 파일부터 j번 파일까지 합치는 최소 비용
+    // sum[i]: 1번 파일부터 i번 파일까지의 용량의 합
+    int K, C[MAX_K + 1][MAX_K + 1] = {{ 0, }}, sum[MAX_K + 1] = { 0, };
 
-                //연속한 파일을 두 그룹으로 찢었을 때 가중치가 최소가 되는 지점 k를 찾는다
-				for (int k = i; k < i + s; k++)
-				{
-					if (ret[i][i + s] > ret[i][k] + ret[k + 1][i + s])
-						ret[i][i + s] = ret[i][k] + ret[k + 1][i + s];
-				}
+    // 문제의 조건을 입력받으며 sum을 갱신
+    cin >> K;
+    for (int i = 1; i <= K; i++) {
+        cin >> C[i][i];
+        sum[i] += sum[i - 1];
+    }
 
-                //i번 파일부터 i + s번 파일까지 합칠 경우 sum[i + s] - sum[i - 1]만큼의 비용이 소모된다
-				ret[i][i + s] += sum[i + s] - sum[i - 1];
-			}
-		}
+    // 각 위치에서 파일을 하나씩 합치면서 최솟값을 계산
+    for (int len = 1; len < K; len++) for (int i = 1; i + len <= K; i++) {
+        // 아직 합치지 않은 파일의 비용을 INF로 설정
+        C[i][i + len] = INF;
 
-        //전부 계산했을 때 ret[1][size]값은 모든 파일의 가중치만큼 더 커져있을 것이므로
-        //sum[size]만큼 뺀 값을 출력한다
-		printf("%d\n", ret[1][size] - sum[size]);
-	}
+        // i와 i + len 사이의 모든 지점에 대해
+        // 두 합친 파일 C[i][j]와 C[j][i + len]을 만드는 비용의 최솟값을 저장한 뒤
+        for (int j = i; j < i + len; j++)
+            C[i][i + len] = min(C[i][i + len], C[i][j] + C[j + 1][i + len]);
 
-	return 0;
+        // 두 파일을 합친 파일 C[i][i + len]을 만드는 비용을 더해 비용을 완성시킨다
+        C[i][i + len] += sum[i + len] - sum[i - 1];
+    }
+
+    // 모든 파일을 합치는 비용의 최솟값을 반환
+    // 이 때 원래 0이어야 할 각 C[i][i]를 i번째 파일의 크기로 설정했으므로
+    // 오차를 바로잡기 위해 모든 파일의 크기의 합을 뺀 값을 반환한다
+    return C[1][K] - sum[K];
+}
+
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    int T;
+    // 테스트 케이스의 수를 입력받고 각 테스트 케이스를 실행
+    for (cin >> T; T--; ) cout << test_case() << '\n';
+    return 0;
 }
