@@ -3,73 +3,130 @@
 
 using namespace std;
 
-//parent[i]: 가중치가 i인 노드의 부모 노드의 가중치
-int parent[50001];
-//트리를 이차원 배열로 저장한다
-vector<vector<int>> v;
+typedef unsigned short us;
 
-//가중치가 p인 노드의 자식을 찾아 해당 노드의 부모 노드를 p로 설정
-//이 과정을 dfs로 실행한다
-void dfs(int p)
-{
-	for (auto i : v[p]) if (parent[i] == 0)
-	{
-		parent[i] = p;
-		if (v[i].size() > 1) dfs(i);
-	}
+#define MAX_N 50000
+
+// N: 노드의 개수, parent[i]: i번 노드의 부모 노드, depth[i]: i번 노드의 깊이
+us N, parent[MAX_N + 1] = { 0, 1, }, depth[MAX_N + 1];
+// v[i]: i번 노드와 연결된 노드
+vector<us> v[MAX_N + 1];
+
+void swap(int &a, int &b) { int t = a; a = b; b = t; }
+
+// 노드 p를 부모 노드로 삼는 노드의 부모 노드와 깊이를 설정
+void dfs(int p) {
+    // p에 연결된 노드 중 아직 부모 노드가 없는 노드에 대해
+    for (auto i : v[p]) if (!parent[i]) {
+        // 부모 노드를 p로, 깊이를 노드 p의 깊이 + 1로 설정한 뒤
+        parent[i] = p;
+        depth[i] = depth[p] + 1;
+        // 노드 i에 연결된 노드가 두 개 이상이라면 dfs 실행
+        if (v[i].size() > 1) dfs(i);
+    }
 }
 
-int main()
-{
-    //n: 트리의 노드 수, cnt: 테스트 케이스의 수
-    //a, b: 트리의 생성과 테스트 케이스에 사용할 노드의 가중치를 저장
-	int n, cnt, a, b;
+// 두 노드 a, b를 입력받아 두 노드의 LCS를 출력
+us test_case() {
+    // LCS를 찾을 두 노드
+    us a, b;
 
-    //트리의 노드 수를 입력받은 뒤
-    scanf("%d", &n);
-    //트리를 저장할 배열 v의 크기를 지정하고
-    v = vector<vector<int>>(n + 1);
-    //트리를 입력받는다
-    for (int i = 1; i < n; i++)
-    {
-        scanf("%d %d", &a, &b);
+    // 노드 a, b를 입력받은 뒤
+    scanf("%hu %hu", &a, &b);
+
+    // a와 b의 깊이를 맞춰주고
+    while (depth[a] < depth[b]) b = parent[b];   
+    while (depth[a] > depth[b]) a = parent[a];
+    // 부모가 같을 때까지 a와 b를 각각의 부모로 설정
+    while (a != b) {
+        a = parent[a];
+        b = parent[b];
+    }
+    
+    //  입력받은 두 노드의 LCS를 반환
+    return a;
+}
+
+int main() {
+    // M: LCS를 찾을 쿼리의 수, a, b: 그래프를 입력받을 때 사용할 변수
+    us M, a, b;
+
+    // 문제의 조건을 입력받아 그래프로 변환
+    scanf("%hu", &N);
+    for (int i = 1; i < N; i++) {
+        scanf("%hu %hu", &a, &b);
         v[a].push_back(b);
         v[b].push_back(a);
     }
 
-    //루트 노드 1의 부모 노드를 1로 설정한다
-    parent[1] = 1;
-    ///dfs를 실행한다
+    // 각 노드의 부모 노드와 깊이를 설정한 뒤
     dfs(1);
 
-    //테스트 케이스를 입력받은 뒤 각 테스트 케이스에 대해
-    scanf("%d", &cnt);
-	while (cnt--)
-	{
-        //노드의 부모를 탐색하는 과정에서 해당 노드가 나왔는지 확인할 배열
-		vector<bool> vec = vector<bool>(n + 1, false);
-        //루트 노드 1은 반드시 공통 노드이다
-		vec[1] = true;
+    // 쿼리의 개수를 입력받고 각 쿼리의 결과를 출력
+    for (scanf("%hu", &M); M--; ) printf("%d\n", test_case());
 
-        //공통 부모 노드를 찾을 두 노드 a와 b를 입력받은 뒤
-	    scanf("%d %d", &a, &b);
-
-        //노드 a에 대해
-		while (a != 1)
-		{
-            //a를 방문했음을 표시한 뒤
-			vec[a] = true;
-            //a를 a의 부모 노드로 설정한다
-			a = parent[a];
-		}
-
-        //노드 b에 대해 b가 이미 방문한 노드가 될 때까지
-        //b를 b의 부모 노드로 갱신한다
-		while (!vec[b]) b = parent[b];
-
-        //a와 b의 공통 부모 노드가 b에 저장되어 있을 것이므로 b를 출력한다
-		printf("%d\n", b);
-	}
-
-	return 0;
+    return 0;
 }
+
+/* #include <cstdio>
+#include <vector>
+
+using namespace std;
+
+#define MAX_N 50000
+#define LOG_N 16
+
+int N, parent[MAX_N + 1][16] = { { 0 }, { 1 }, }, depth[MAX_N + 1];
+vector<int> v[MAX_N + 1];
+
+void swap(int &a, int &b) { int t = a; a = b; b = t; }
+
+void dfs(int p, int d) {
+    depth[p] = d;
+    for (auto i : v[p]) if (!parent[i][0]) {
+        parent[i][0] = p;
+        dfs(i, d + 1);
+    }
+}
+
+void set_parent() {
+    for (int d = 1; d < LOG_N; d++) for (int n = 1; n <= MAX_N; n++) 
+        parent[n][d] = parent[parent[n][d - 1]][d - 1];
+}
+
+int test_case() {
+    int a, b, jump = LOG_N - 1;
+
+    scanf("%hu %hu", &a, &b);
+
+    if (depth[a] < depth[b]) swap(a, b);
+    for (int i = LOG_N - 1; i >= 0; i--) if (depth[a] - depth[b] >= (1 << i))
+        a = parent[a][i];
+
+    if (a == b) return a;
+
+    for (int i = LOG_N - 1; i >= 0; i--) if (parent[a][i] != parent[b][i]) {
+        a = parent[a][i];
+        b = parent[b][i];
+    }
+    
+    return parent[a][0];
+}
+
+int main() {
+    int M, a, b;
+
+    scanf("%hu", &N);
+    for (int i = 1; i < N; i++) {
+        scanf("%hu %hu", &a, &b);
+        v[a].push_back(b);
+        v[b].push_back(a);
+    }
+
+    dfs(1, depth[1] + 1);
+    set_parent();
+
+    for (scanf("%hu", &M); M--; ) printf("%d\n", test_case());
+
+    return 0;
+} */

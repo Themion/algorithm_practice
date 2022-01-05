@@ -1,34 +1,57 @@
-#include <algorithm>
-#include <cstdio>
-#include <map>
+#include <iostream>
+#include <queue>
+#include <vector>
 
-int abs(int num) { return num > 0 ? num : -num; }
+using namespace std;
 
-int main()
-{
-    // map을 heap처럼 사용
-    std::map<std::pair<int, int>, int> heap;
-    std::map<std::pair<int, int>, int>::iterator it;
-    int N, num;
+#define MAX_N 100000
 
-    scanf("%d", &N);
-    while (N--)
-    {
-        scanf("%d", &num);
-        // 숫자가 자연수라면 heap에 push
-        if (num) heap[std::pair<int, int>(abs(num), num)]++;
-        // 숫자가 0이고 힙에 원소가 없다면 0을 출력
-        else if (heap.empty()) printf("0\n");
-        // 숫자가 0이고 힙에 원소가 있다면
-        else
-        {
-            // map의 첫번째 원소의 key를 출력
-            it = heap.begin();
-            printf("%d\n", it->first.second);
-            // 첫번째 원소의 값에서 1을 빼고 그 결과가 0이라면 map에서 제거
-            if (--(it->second) == 0) heap.erase(it->first);
+// int를 절댓값과 부호로 나누어 저장
+class num {
+public:
+    // 실제 값이 음수라면 true
+    bool b = false;
+    // 실제 값의 절댓값
+    int i = 0;
+
+    num() {}
+    num(int i_) { b = i_ < 0; i = abs(i_); }
+    // x의 절댓값
+    int abs(int x) { return x < 0 ? -x : x; }
+    // 클래스의 실제 값
+    int val() { return b ? -i : i; }
+};
+
+// 두 num 클래스를 비교
+bool operator<(num p, num q) { return p.i == q.i ? p.b : p.i < q.i; }
+bool operator>(num p, num q) { return p.i == q.i ? !p.b : p.i > q.i; }
+// cout용 operator
+ostream &operator<<(ostream &out, num n) { out << n.val(); return out; }
+
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    // N: 연산의 개수, x: 각 연산
+    int N, x;
+    // 최소 힙
+    priority_queue<num, vector<num>, greater<num>> q;
+
+    // 각 연산에 대해
+    for (cin >> N; N--; ) {
+        // 연산을 입력받은 뒤
+        cin >> x;
+
+        // x가 0이 아니라면 해당 수를 힙에 push
+        if (x != 0) q.push(num(x));
+        // 아니라면 힙에서 노드를 하나 출력한 뒤 pop
+        else {
+            cout << (!q.empty() ? q.top() : 0) << '\n';
+            if (!q.empty()) q.pop();
         }
-     }
+    }
 
     return 0;
 }

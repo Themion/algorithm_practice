@@ -3,25 +3,21 @@
 
 using namespace std;
 
-int main()
-{
-	//cin, cout 사용 시 필히 사용할 것
-	ios::sync_with_stdio(false);
-	cin.tie(NULL);
-	cout.tie(NULL);
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-	//str:: 매 줄마다 입력받을 문자열을 공백 포함해서 저장한다
-	string str;
-	getline(cin, str);
+    // 해독할 문자열
+    string str;
 
-	//str에 "END"가 들어오기 전까지는 문자열을 뒤집어서 출력한다
-	//str에 "END"가 들어오면 프로그램 종료
-	while (str != "END")
-	{
-		for (int i = str.size() - 1; i >= 0; i--) cout << str[i];
-		cout << '\n';
-		getline(cin, str);
-	}
+    // 입력받은 문자열이 "END"가 아니라면
+    while (getline(cin, str) && str != "END") {
+        // 역순으로 출력한 뒤 개행 문자를 출력
+        for (auto i = str.rbegin(); i != str.rend(); i++) cout << *i;
+        cout << '\n';
+    }
 
     return 0;
 }

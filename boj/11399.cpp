@@ -1,33 +1,25 @@
 #include <algorithm>
 #include <cstdio>
 
-//인덱스 번째 사람이 돈을 인출하는데 걸리는 시간
-int cont[1001];
+using namespace std;
 
-int main()
-{
-	//size : 실제로 쓰이는 cont의 크기
-	//ret : 각 사람이 돈을 인출하는데 필요한 시간의 합
-	int size, ret = 0;
-	scanf("%d", &size);
-	for (int i = 1; i <= size; i++) scanf("%d", &cont[i]);
+#define MAX_N 1000
 
-	//i번째 사람이 기다리는 시간은 1번부터 i-1번째 사람이 돈을 인출하는데 걸린 시간의 총합이다
-	//즉 인덱스가 작을수록 해당 인덱스의 값 역시 작아야 한다
-	std::sort(cont + 1, cont + size + 1);
-	//시간 복잡도를 줄이기 위해 cont[0]을 가중치로 둔다
-	cont[0] = size;
+int main() {
+    // N: 사람의 수, P: 각 사람이 인출할 때 걸리는 시간, ans: 총 대기시간
+    int N, P[MAX_N] = { 0, }, ans = 0;
 
-	//ret에 i번째 사람이 걸리는 시간 * 가중치를 더한다
-	//가중치는 size부터 시작해서 인덱스가 1 늘수록 1씩 준다
-	for (int i = 1; i <= size; i++)
-	{
-		ret += cont[i] * cont[0];
-		cont[0] -= 1;
-	}
+    // 문제의 조건을 입력받은 뒤
+    scanf("%d", &N);
+    for (int i = 0; i < N; i++) scanf("%d", P + i);
 
-	//ret을 출력한다
-	printf("%d\n", ret);
+    // 총 대기시간을 최소로 하기 위해선 인출 시간이 짧은 순으로 인출해야 하므로 정렬
+    sort(P, P + N);
+    // 각 인원의 인출 시간과 인출할 때 기다려야 하는 사람의 수를 각각 곱해 ans에 더한다
+    for (int i = 0; i < N; i++) ans += (N - i) * P[i];
+
+    // 총 대기시간을 출력
+    printf("%d\n", ans);
 
     return 0;
 }
