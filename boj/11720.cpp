@@ -1,30 +1,15 @@
 #include <cstdio>
 
-int main()
-{
-	//times : 한 자리 수를 서로 붙여놀은 문자열
-	//sum : 출력할 합
-	int times, sum = 0;
-	//num : 한 자리 수를 입력받기 위해 char 형식으로 선언
-	char num;
+int main() {
+    char c;
+    int sum = 0;
 
-	//times를 입력받는다.
-	//버퍼를 비우기 위해 "%d"가 아닌 %d "를 사용.
-	//숫자 다음에 오는 개행문자를 무시할 수 있다
-	scanf("%d ", &times);
-
-	for (int i = 0; i < times; i++)
-	{
-		//입력 형식 상 개행문자가 들어오지 않는다
-		//num에 한 자리 수를 입력받는다
-		scanf("%c", &num);
-		//sum에 num을 더한다
-		//num이 나타내는 숫자는 num - '0'
-		sum += num - '0';
-	}
-
-	//sum을 출력
-	printf("%d\n", sum);
+    // N은 입력받을 필요 없다
+    scanf("%*d%*c");
+    // 숫자가 공백 없이 주어지므로 주어지는 각 숫자는 한 자리 수이다
+    // 모든 한 자리 수를 입력받아 sum에 그 합을 저장한 뒤 출력
+    while (scanf("%c", &c) && c != '\n') sum += c - '0';
+    printf("%d\n", sum);
 
     return 0;
 }

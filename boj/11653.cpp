@@ -1,19 +1,16 @@
 #include <cstdio>
 
-int main()
-{
-    int N, i = 1;
-    scanf("%d", &N);
+int main() {
+    // 소인수분해 할 수
+    int N;
 
-    // 현재 N의 인수 중 제곱근보다 크지 않은 인수를 모두 출력
-    while (N >= ++i * i) while (N % i == 0)
-    {
-        printf("%d\n", i);
-        N /= i;
-    }
+    // N의 인수가 둘 이상이라면 N은 가장 작은 인수 i의 제곱보다 크거나 같다
+    // N이 인수 i로 나누어 떨어질 동안 i를 출력
+    for (int i = scanf("%d", &N); N >= ++i * i; ) 
+        for (; !(N % i); N /= i) printf("%d\n", i);
 
-    // N의 인수 중 제곱근보다 크지 않은 약수가 없고, 
-    // N이 1이 아니라면 N은 소수이므로 출력
+    // for문을 벗어낫다면 N의 인수가 하나 이하가 된다
+    // N이 1이 아니라면 N은 N의 소수인 인자이므로 출력
     if (N != 1) printf("%d\n", N);
 
     return 0;

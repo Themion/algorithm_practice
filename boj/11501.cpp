@@ -1,4 +1,6 @@
-#include <cstdio>
+#include <iostream>
+
+using namespace std;
 
 typedef long long ll;
 
@@ -6,16 +8,16 @@ typedef long long ll;
 
 // 각 테스트 케이스를 입력받아 정답을 반환
 ll test_case() {
-    // N: 주가 배열의 길이
+    // 주가 배열의 길이
     int N;
     // val[i]: i번째 날의 주가, max: 팔았을 때 최대 이익을 볼 수 있는 주가
-    short val[MAX_N] = { 0,  }, max = 0;
+    short val[MAX_N] = { 0, }, max = 0;
     // ret: 실현손익
     ll ret = 0;
 
     // 주가 배열을 입력받은 뒤
-    scanf("%d", &N);
-    for (int i = 0; i < N; i++) scanf("%d", val + i);
+    cin >> N;
+    for (int i = 0; i < N; i++) cin >> val[i];
     // 마지막 날부터 역순으로
     for (int i = N - 1; i >= 0; i--) {
         // 주가의 최대치를 발견한다면 매도일을 i번째 날로 지정
@@ -29,9 +31,13 @@ ll test_case() {
 }
 
 int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
     int T;
-    scanf ("%d", &T);
-    while (T--) printf("%lld\n", test_case());
-
+    // 테스트 케이스의 수를 입력받고 각 테스트 케이스의 정답을 출력
+    for (cin >> T; T--; ) cout << test_case() << '\n';
     return 0;
 }

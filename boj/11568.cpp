@@ -1,33 +1,29 @@
+#include <algorithm>
 #include <cstdio>
 
-void set_max(int &a, int b) { a = a > b ? a : b; }
-void set_min(int &a, int b) { a = (a > b || a == 0) ? b : a; }
+using namespace std;
 
-int main()
-{
-    int N, max = 0;
-    // card[i]: i번째 카드
-    // max-of_len[i]: 길이가 i인 부분수열에서 가장 큰 값
-    int card[1000], max_of_len[1000] = { 0, };
+#define MAX_N 1000
 
-    // 카드의 목록을 입력받는다
-    scanf("%d", &N);
-    for (int i = 0; i < N; i++) scanf("%d", card + i);
+int main() {
+    // N: 카드의 개수, card: 각 카드에 적힌 수
+    // lis: 가장 긴 증가하는 부분 수열, len: lis의 길이
+    int N, card, lis[MAX_N] = { 0, }, len = 0;
 
-    // 각 카드와 길이가 서로 다른 증가 부분수열에 대해
-    for (int i = 0; i < N; i++) for (int l = max; l >= 0; l--)
-        // 부분수열의 마지막 값이 현재 카드보다 작다면
-        if (card[i] > max_of_len[l])
-        {
-            // 부분수열의 맨 뒤에 현재 카드를 더한 뒤 
-            // 맨 끝 값이 더 작은 부분수열을 저장
-            set_min(max_of_len[l + 1], card[i]);
-            // 부분수열의 최대 길이를 갱신
-            set_max(max, l + 1);
-        }
-    
-    // 부분수열의 최대 길이를 출력
-    printf("%d\n", max);
+    // 각 수열의 성분에 대해
+    for (scanf("%d", &N); N--; ) {
+        // 각 수열의 성분을 입력받고
+        scanf("%d", &card);
+        // 증가하는 부분 수열 lis이 비었거나 card가 lis의 마지막 값보다 크다면
+        // lis의 맨 뒤에 card를 추가
+        if (!len || lis[len - 1] < card) lis[len++] = card;
+        // 그렇지 않다면 lis에서 card보다 작은 값 중 가장 큰 값을 card로 변경
+        // 부분 수열의 순서에는 영향을 미치지만 부분 수열의 길이에는 영향을 주지 않음
+        else *lower_bound(lis, lis + len, card) = card;
+    }
+
+    // 가장 긴 증가하는 부분 수열의 길이를 출력
+    printf("%hd\n", len);
 
     return 0;
 }

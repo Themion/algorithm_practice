@@ -1,27 +1,17 @@
 #include <cstdio>
 
-int main()
-{
-	//글자를 하나씩 입력받을 버퍼
-	char buf;
-	//글자가 들어온 횟수를 센다
-	int count = 0;
+int main() {
+    // 단어를 한 글자씩 입력받을 공간
+    char c;
+    // 입력받은 문자의 개수
+    int i = 0;
 
-	//buf에 글자가 하나씩 들어올 때마다
-	while (scanf("%c", &buf) == 1)
-	{
-		//글자를 그대로 출력
-		printf("%c", buf);
-		//글자가 들어온 횟수를 1 추가
-		count += 1;
-
-		//글자가 열 번 들어올 때마다 줄을 바꾼 뒤 count를 0으로 초기화
-		if (count == 10)
-		{
-			printf("\n");
-			count = 0;
-		}
-	}
-
+    // 글자의 모든 문자를 입력받은 뒤
+    while (scanf("%c", &c) && c != '\n') {
+        // 문자를 출력하고
+        printf("%c", c);
+        // 입력받은 문자의 개수가 10의 배수일 때 줄바꿈을 출력
+        if (!(++i % 10)) printf("\n");
+    }
     return 0;
 }

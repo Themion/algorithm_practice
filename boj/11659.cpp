@@ -1,28 +1,32 @@
-#include <cstdio>
+#include <iostream>
 
-// arr[i]: 입력받은 값을 처음부터 i번째 값까지 더한 값
-int arr[100001] = { 0, };
+using namespace std;
 
-int main()
-{
-    // size: 입력받을 배열의 크기, tc: 테스트 케이스의 수
-    // s, e: 각 테스트 케이스에서 덧셈의 시작점과 끝점
-    int size, tc, s, e;
-    scanf("%d %d", &size, &tc);
+#define MAX_N 100000
 
-    // 배열의 각 항목을 입력받아 이전 값과 더한다
-    for (int i = 1; i <= size; i++) 
-    {
-        scanf("%d", &s);
-        arr[i] = arr[i - 1] + s;
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    // N: 수의 개수, M: 쿼리의 개수, sum[i]: 1번째 수부터 i번째 수까지의 합
+    // i, j: 인덱스
+    int N, M, sum[MAX_N + 1] = { 0, }, i, j;
+
+    // 수의 개수와 쿼리의 개수를 입력받은 뒤 각 수를 입력받아 합을 sum에 저장
+    cin >> N >> M;
+    for (i = 1; i <= N; i++) {
+        cin >> j;
+        sum[i] = sum[i - 1] + j;
     }
 
-    // 각 테스트 케이스에서
-    while (tc--)
-    {
-        // 시작점과 끝점을 입력받아 뺄셈 한 번으로 덧셈 결과를 출력
-        scanf("%d %d", &s, &e);
-        printf("%d\n", arr[e] - arr[s - 1]);
+    // 각 쿼리마다
+    while (M--) {
+        // 합을 구할 구간을 입력받은 뒤
+        cin >> i >> j;
+        // (1부터 j까지의 합) - (1부터 i - 1까지의 합)을 출력
+        cout << sum[j] - sum[i - 1] << '\n';;
     }
 
     return 0;
