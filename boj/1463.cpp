@@ -3,13 +3,13 @@
 #define MAX_N (int)1e6
 #define INF 0x3f3f3f3f
 
-// cnt[i]: i를 1로 만들기 위한 최소 연산 횟수
-short cnt[MAX_N + 1];
-
 short min(short a, short b) { return a < b ? a : b; }
 
 int main() {
+    // 1로 만들고자 하는 수
 	int N;
+    // cnt[i]: i를 1로 만들기 위한 최소 연산 횟수
+    short cnt[MAX_N + 1];
 	scanf("%d", &N);
     // 2부터 N까지 차례대로
 	for (int i = 2; i <= N; i++)
