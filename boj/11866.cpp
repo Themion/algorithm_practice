@@ -1,25 +1,33 @@
 #include <cstdio>
-#include <vector>
+#include <queue>
 
-int main()
-{
-    int n, k, idx = 0;      //n: 수열의 길이, k: 점프 거리
-    std::vector<int> v;     //idx: 빠질 항목의 인덱스, v: 수열을 만들 배열
-    scanf("%d %d", &n, &k);
+using namespace std;
 
-    for (int i = 1; i <= n; i++) v.push_back(i);    //수열의 항목을 입력
+int main() {
+    // N: 수열의 길이, K: 점프 거리
+    int N, K, idx = 0;
+    // 순열을 저장할 큐
+    queue<int> q;
 
+    // 문제의 조건을 입력받은 뒤 수열의 각 성분을 설정
+    scanf("%d %d", &N, &K);
+    for (int i = 1; i <= N; i++) q.push(i);
+
+    // 출력 형식을 맞춘다
     printf("<");
 
-    while (v.size())
-    {
-        idx = (idx + k - 1) % v.size(); //다음으로 제거할 항목의 인덱스 게산
-        printf("%d", v[idx]);           //제거할 항목을 출력
-        v.erase(v.begin() + idx);       //항목 제거
-        if(v.size()) printf(", ");      //출력 양식 맞추기
+    while (q.size()) {
+        // 제거할 성분을 찾을 때까지 push와 pop을 반복한 뒤
+        for (int i = 1; i < K; i++) {
+            q.push(q.front());
+            q.pop();
+        }
+        // 제거할 성분을 출력한 뒤 제거
+        printf("%d", q.front());
+        q.pop();
+        // 출력 형식을 맞춘다
+        printf("%s", q.size() ? ", " : ">\n");
     }
-
-    printf(">\n");
 
     return 0;
 }

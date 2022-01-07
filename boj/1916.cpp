@@ -64,8 +64,9 @@ int main() {
         v[start].emplace_back(cost[0], dest);
     }
 
-    // 시작 노드와 도착 노드를 입력받아 
+    // 시작 노드와 도착 노드를 입력받은 뒤
     cin >> start >> dest;
+    // 시작 노드에서 도착 노드로 이동하는 데 드는 최소 비용을 출력
     cout << dijkstra(start, dest) << '\n';
 
     return 0;

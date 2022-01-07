@@ -1,59 +1,39 @@
-#include <cstdio>
-#include <queue>
+#include <iostream>
 #include <vector>
 
 using namespace std;
 
-//에지를 연결 리스트의 형태로 표현
-vector<int> edge[100001];
+#define MAX_N 100000
 
-int main()
-{
-	//size : 실제 노드의 개수
-	//a, b : edge의 인덱싱에 쓸 변수
-	int size, a, b;
-    scanf("%d", &size);
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-	//bfs에 사용할 큐
-	queue<int> parent;
-	//인덱스의 부모 노드를 값으로 가짐
-	vector<int> tree(100001);
+    // N: 노드의 개수, a, b: 각 에지를 이루는 두 노드, parent[i]: 노드 i의 부모 노드
+    // q: 큐, len: 큐의 길이
+    int N, a, b, parent[MAX_N + 1] = { 0, }, q[MAX_N] = { 1, }, len = 1;
+    // v[i]: 노드 i에 연결된 노드의 집합
+    vector<int> v[MAX_N + 1];
 
-	//에지를 입력받아 트리를 완성한다
-	for (int c = 0; c < size - 1; c++)
-	{
-	    scanf("%d %d", &a, &b);
-		edge[a].push_back(b);
-		edge[b].push_back(a);
-	}
+    // 각 에지에 대해
+    for (cin >> N; --N; ) {
+        // 에지에 연결된 두 노드를 입력받아 v에 각각 저장
+        cin >> a >> b;
+        v[a].push_back(b);
+        v[b].push_back(a);
+    }
+    
+    // bfs: i번째로 발견된 노드 q[i]에 연결된 노드 j의 부모가 발견되지 않았다면
+    for (int i = 0; i < len; i++) for (auto j : v[q[i]]) if (!parent[j]) {
+        // j의 부모를 q[i]로 설정한 뒤 j를 q에 push
+        parent[j] = q[i];
+        q[len++] = j;
+    }
 
-	//루트 노드를 큐에 넣는다
-	parent.push(1);
-
-	//bfs 사용
-	while (!parent.empty())
-	{
-		//큐에 존재하는 각 노드에 대해
-		a = parent.front();
-
-		//노드에 연결된 모든 노드에 대해
-		for (b = 0; b < edge[a].size(); b++)
-		{
-			//해당 노드의 부모 노드가 알려지지 않았다면
-			//부모 노드를 큐의 front 노드로 설정하고 자식 노드를 큐에 넣는다
-			if (tree[edge[a][b]] == 0)
-			{
-				tree[edge[a][b]] = a;
-				parent.push(edge[a][b]);
-			}
-		}
-
-		//큐의 front 노드의 모든 자식 노드를 파악했으므로 pop한다
-		parent.pop();
-	}
-
-	//각 노드의 부모 노드를 출력
-	for (int i = 2; i <= size; i++) printf("%d\n", tree[i]);
+    // 2번 노드부터 차례로 노드의 부모를 출력
+    for (int i = 2; parent[i]; i++) cout << parent[i] << '\n';
 
     return 0;
 }

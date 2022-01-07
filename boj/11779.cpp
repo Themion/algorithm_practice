@@ -1,88 +1,84 @@
-#include <cstdio>
+#include <iostream>
 #include <queue>
 #include <vector>
 
 using namespace std;
 
-typedef pair<int, int> edge;
-
+#define INF 0x3f3f3f3f
+#define MAX_N 1000
 #define _cost first
 #define _node second
 
-#define MAX_N 1001
-#define INF 0x3f3f3f3f
+typedef pair<int, int> edge;
 
-int n, m;
-vector<edge> graph[MAX_N];
+// N: 노드의 수, M: 에지의 수, cost[i]: 시작 노드에서 i번 노드까지의 비용
+int N, M, cost[MAX_N + 1];
+// 다익스트라 탐색에 사용할 우선순위 큐
+priority_queue<edge, vector<edge>, greater<edge>> q;
+// v[i]: i번 노드에서 시작하는 에지의 집합
+vector<edge> v[MAX_N + 1];
+// route[i]: 시작 노드에서 노드 i까지의 경로
+vector<int> route[MAX_N + 1];
 
-//  a + b := a.push_back(b)
-vector<int> operator+(vector<int> a, int b)
-{
+// a에 b를 push한 후의 벡터를 반환
+vector<int> operator+(vector<int> a, int b) {
     a.push_back(b);
     return a;
 }
 
-void dijkstra(int start, int dest)
-{
-    // cost[i]: start에서 i까지 이동할 때의 최소 비용
-    vector<int> costs(n + 1, INF);
-    // routes[i]: start에서 i까지의 최소 비용 경로
-    vector<vector<int>> routes(n + 1, vector<int>(0));
-    // 다익스트라 탐색에 사용할 우선순위 큐
-    priority_queue<edge, vector<edge>, greater<edge>> q;
-
-    // 시작점으로 이동하는 최소 비용은 항상 0
-    costs[start] = 0;
-    // 시작점으로 이동하는 최소 비용 경로는 정해져 있다
-    routes[start].push_back(start);
-
-    // 시작점으로 이동하는 가상의 에지를 입력
-    q.push({0, start});
-
-    // 탐색 가능한 에지가 존재할 때
-    while (!q.empty())
-    {
-        // 비용이 가장 작은 에지 e를 q에서 제거
-        edge e = q.top();
-        q.pop();
-
-        // e를 사용했을 때의 비용이 기존 비용보다 크다면 continue
-        if (costs[e._node] < e._cost) continue;
-
-        // e를 사용한 뒤 기존 경로 중 비용을 절감할 수 있는 경로가 있다면
-        for (auto e_ : graph[e._node]) if (costs[e_._node] > e._cost + e_._cost)
-        {
-            // 경로와 비용을 갱신한 뒤
-            costs[e_._node] = e._cost + e_._cost;
-            routes[e_._node] = routes[e._node] + e_._node;
-            // 갱신한 에지 e_를 q에 push
-            q.push({e._cost + e_._cost, e_._node});
-        }
+// 에지 e를 q에 push하며 비용과 경로를 갱신
+int push(edge e) {
+    // e의 도착 노드에서 시작하는 모든 에지 e_를 사용해 비용 갱신이 가능하다면
+    for (auto e_ : v[e._node]) if (cost[e_._node] > cost[e._node] + e_._cost) {
+        // 경로와 비용을 갱신한 뒤 e_를 q에 push
+        route[e_._node] = route[e._node] + e_._node;
+        q.push({cost[e_._node] = cost[e._node] + e_._cost, e_._node});
     }
 
-    // start에서 dest까지의 비용과 경로의 길이, 경로를 출력
-    printf("%d\n%d\n", costs[dest], (int)(routes[dest].size()));
-    for (int node : routes[dest])
-        printf("%d ", node);
-
-    printf("\n");
+    // 에지 e의 도착 노드를 반환
+    return e._node;
 }
 
-int main()
-{
-    int s, e, c;
+// start 노드에서 dest 노드까지의 최소 비용을 계산
+int dijkstra(int start, int dest) {
+    // 모든 비용을 INF로 초기화한 뒤
+    fill_n(cost, N + 1, INF);
 
-    // 그래프를 입력받은 뒤
-    scanf("%d\n%d", &n, &m);
-    while (m--)
-    {
-        scanf("%d %d %d", &s, &e, &c);
-        graph[s].push_back({c, e});
+    // start 노드에서 start 노드로의 비용과 경로를 초기화
+    cost[start] = 0;
+    route[start].emplace_back(start);
+
+    // start 노드에서 start 노드로 이동하는 가상의 에지를 push
+    push({cost[start], start});
+    // dest 노드를 탐색할 때까지 탐색 가능한 모든 에지를 push
+    while (!q.empty() && push(q.top())!= dest) q.pop();
+    // start 노드에서 dest 노드까지의 최소 비용을 반환
+    return cost[dest];
+}
+
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    // start, dest: start 노드에서 dest 노드로 이동하는 에지
+    int start, dest;
+
+    // 문제의 조건을 입력받는다
+    for (cin >> N >> M; M--; ) {
+        // cost는 [1, N] 범위만 사용하므로 cost[0]을 임시로 사용
+        cin >> start >> dest >> cost[0];
+        v[start].emplace_back(cost[0], dest);
     }
-    scanf("%d %d", &s, &e);
 
-    // 입력받은 그래프를 이용해 dijkstra 실행
-    dijkstra(s, e);
+    // 시작 노드와 도착 노드를 입력받은 뒤
+    cin >> start >> dest;
+    // 시작 노드에서 도착 노드로 이동하는 데 드는 최소 비용과 그 경로의 길이를 출력
+    cout << dijkstra(start, dest) << '\n' << route[dest].size() << '\n';
+    // 시작 노드에서 도착 노드로 이동하는 최소 경로를 출력
+    for (auto n : route[dest]) cout << n << ' ';
+    cout << '\n';
 
     return 0;
 }

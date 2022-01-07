@@ -1,50 +1,49 @@
-#include <cstdio>
+#include <iostream>
 
-//입력받은 그래프를 2차원 배열로 저장한다
-bool graph[1001][1001];
-//N: 그래프의 노드의 수, M: 그래프의 간선 수
-int N, M;
+using namespace std;
 
-void dfs(int node)
-{
-    //node를 방문했음을 표시한 뒤
-	graph[node][node] = false;
-    //node와 연결되어 있고 방문하지 않은 노드가 있다면
-	for (int i = 1; i <= N; i++) 
-        if (graph[node][i] && graph[i][i])
-            //해당 노드를 방문한다
-            dfs(i);
+#define MAX_N 1000
+
+// parent[i]: 노드 i의 부모 노드
+int parent[MAX_N + 1];
+
+// 노드 node가 속한 트리의 루트 노드를 재귀적으로 탐색
+int root(int node) {
+    if (parent[node] && parent[node] != node)
+        return parent[node] = root(parent[node]);
+    return parent[node] = node;
 }
 
-int main()
-{
-    //t1, t2: 그래프를 입력받을 때 사용할 변수
-	int t1, t2, ret = 0;
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-    //그래프를 입력받는다
-	scanf("%d %d", &N, &M);
-	for (int i = 0; i < M; i++)
-	{
-		scanf("%d %d", &t1, &t2);
-		graph[t1][t2] = true;
-		graph[t2][t1] = true;
-	}
+    // visit[i]: 루트 노드가 i인 그래프를 탐색했다면 true
+    bool visit[MAX_N + 1] = { 0, };
+    // N: 노드의 수, M: 에지의 수, a, b: 각 에지를 이루는 두 노드, ans: 그래프의 수
+    int N, M, a, b, ans = 0;
 
-    //그래프의 각 노드는 연결된 에지가 없더라도 그 자체로 연결 요소이다
-    for (int i = 1; i <= N; i++) graph[i][i] = true;
+    // 노드와 에지의 수를 입력받은 뒤 각 에지에 대해
+    for (cin >> N >> M; M--; ) {
+        // 에지를 이루는 두 노드를 입력받고
+        cin >> a >> b;
 
-    //모든 노드에 대해 dfs를 실행한다
-    for (int i = 1; i <= N; i++)
-        if (graph[i][i])
-        {
-            dfs(i);
-            //dfs를 한 번 실행할 때마다 연결 요소를 찾은 것이므로
-            //ret에 1을 더한다
-            ret++;
-        }
+        // 두 노드가 속한 트리의 루트 노드를 계산한 뒤
+        a = root(a);
+        b = root(b);
+        // 두 트리를 연결
+        parent[a] = b;
+    }
 
-    //ret를 출력한다
-    printf("%d\n", ret);
+    // 각 노드가 속한 트리의 루트 노드만을 방문한 뒤
+    for (int i = 1; i <= N; i++) visit[root(i)] = true;
+    // 루트 노드의 개수를 계산해 ans에 저장
+    for (int i = 1; i <= N; i++) ans += visit[i];
 
-	return 0;
+    // 루트 노드의 개수, 즉 연결 요소의 개수를 출력
+    cout << ans << '\n';
+    
+    return 0;
 }
