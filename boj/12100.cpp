@@ -1,220 +1,89 @@
-#include <algorithm>
 #include <cstdio>
-#include <vector>
 
-using namespace std;
+#define MAX_N 20
+#define init(i, d) d < 2 ? crd((N - 1) * (d % 2), i) : crd(i, (N - 1) * (d % 2))
 
-void UP(int idx);
-void DOWN(int idx);
-void LEFT(int idx);
-void RIGHT(int idx);
+// N: 보드의 크기, add[i]: {위쪽, 아래쪽, 왼쪽, 오른쪽}[i]으로 블록을 탐색할 변위
+// ans: 블록의 최대 크기
+int N, add[4][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}, ans = 0;
 
-//2048의 한 블럭
-//좌표값과 블럭의 가중치 val을 인자로 가지고 있다
-class cell
-{
+int max(int a, int b) { return a > b ? a : b; }
+
+// 보드의 각 칸을 pair형 클래스로 탐색
+class crd {
 public:
-    int x, y, val;
-    cell() { x = 0; y = 0; val = 0; }
-    cell(int xx, int yy, int V) { x = xx; y = yy; val = V; }
+    // y, x: 보드의 좌표 (x, y)
+    int y = 0, x = 0;
+    crd() {}
+    crd(int y_, int x_) { y = y_; x = x_; }
+
+    // 현재 좌표가 유효하다면 true, 아니라면 false
+    bool valid() { return y >= 0 && y < N && x >= 0 && x < N; }
+    // 현재 좌표를 dir 방향으로 한 칸 이동한 좌표
+    crd next(int dir) { return { this->y + add[dir][0], this->x + add[dir][1] }; }
 };
 
-//ret: 역대 최고 가중치, len: 게임보드의 한 변의 길이
-int ret = 0, len;
-//게임보드를 2차원 배열이 아닌, cell들의 1차원 배열로 본다
-//총 5번 스와이프하므로 보드의 수는 6개
-vector<cell> board[6];
+// 보드의 각 상태를 클래스로 저장
+class board {
+public:
+    // arr[i][j]: 보드의 i행 j열의 블록의 크기
+    int arr[MAX_N][MAX_N] = {{ 0, }};
 
-//보드를 idx번 스와이프한 다음 위로 스와이프 하는 경우
-void UP(int idx)
-{
-    //스와이프 직후의 공간을 레퍼런스로 불러온다
-    vector<cell> &lst = board[idx + 1];
+    board() {}
 
-    //기존 보드의 상태를 가져온다
-    lst.resize((int)(board[idx].size()));
-    copy(board[idx].begin(), board[idx].end(), lst.begin());
+    // arr을 간접적으로 호출
+    int* operator[](int i) { return arr[i]; }
+    int& operator[](crd c) { return arr[c.y][c.x]; }
 
-    //cell을 x값이 작은 순으로, x값이 같다면 y값이 작은 순으로 정렬한다
-    sort(lst.begin(), lst.end(), [](cell &a, cell &b) {
-        if (a.x == b.x) return a.y < b.y;
-        return a.x < b.x;
-    });
+    // cnt번 이동시켜서 얻을 수 있는 가장 큰 블록을 ans에 저장
+    void backtrack(int cnt) { if (cnt) for (int d = 0; d < 4; d++) backtrack(cnt, d); }
+    void backtrack(int cnt, int dir) {
+        // 직전에 블록을 합쳤다면 true, 아니라면 false
+        bool chk;
+        // q: 보드를 dir 방향으로 이동시켰을 때 각 행 / 열의 상태, len: q의 길이
+        int q[MAX_N], len;
+        // 현재 상태를 보존하기 위해 만든 새 보드
+        board b = *this;
+        // 보드를 탐색하기 위한 인덱스
+        crd c;
 
-    //자신 바로 다음에 위치한 블럭이 같은 열에 있고, 같은 가중치를 가지고 있다면 두 블럭을 합친다
-    for (int i = 0; i < lst.size() - 1; i++)
-    {
-        if ((lst[i].x == lst[i + 1].x) && (lst[i].val == lst[i + 1].val))
-        {
-            lst[i].val *= 2;
-            lst.erase(lst.begin() + i + 1);
+        // 보드의 각 행/ 열에 대해
+        for (int i = 0; i < N; i++) {
+            // 큐와 그 길이, 블록을 합쳤는지 여부를 초기화
+            for (int j = len = chk = 0; j < N; j++) q[j] = 0;
 
-            //블럭이 합쳐질 때마다 최고 가중치를 갱신한다
-            if (ret < lst[i].val) ret = lst[i].val;
+            // 각 행 / 열의 이동 방향의 끝점부터 시작점까지의 모든 블록에 대해
+            for (c = init(i, dir); c.valid(); c = c.next(dir)) if (b[c]) {
+                // 현재 블록값이 직전에 q에 들어간 합쳐지지 않은 블록값과 같다면
+                // q에 있는 블록값을 두배로 한 뒤 블록의 최댓값을 갱신하고
+                // q에 있는 블록이 합쳐져서 만든 블록임을 표시
+                if (len && q[len - 1] == b[c] && !chk)
+                    chk = ans = max(ans, q[len - 1] *= 2);
+                // 그렇지 않다면 q에 현재 블록을 push
+                else chk = !(q[len++] = b[c]);
+            }
+
+            // 현재 행 / 열을 비운 뒤 q에 있는 각 블록을 차례로 배치
+            c = init(i, dir);
+            for (int j = 0; j < N; c = c.next(dir)) b[c] = q[j++];
         }
+
+        // 가능한 이동 횟수를 1 줄인 뒤 최대 블록값 계산
+        b.backtrack(cnt - 1);
+    }
+} brd;
+
+int main() {
+    // 문제의 조건을 입력받으며 초기 상태의 블록의 최댓값 계산
+    scanf("%d", &N);
+    for (int i = 0; i < N; i++) for (int j = 0; j < N; j++) {
+        scanf("%d", &brd[i][j]);
+        ans = max(ans, brd[i][j]);
     }
 
-    //맨 첫 블록의 y좌표는 0임이 자명하다
-    lst[0].y = 0;
-
-    //각 cell의 y좌표를 이전 cell과 비교하여 결정한다
-    //이전 cell이 자신과 같은 열에 있다면 y좌표는 이전 cell의 y좌표 + 1, 그렇지 않다면 0
-    for (int i = 1; i < lst.size(); i++)
-    {
-        if (lst[i].x == lst[i - 1].x) lst[i].y = lst[i - 1].y + 1;
-        else                          lst[i].y = 0;
-    }
-
-    //스와이프를 재귀적으로 실행한다
-    if (idx < 4) { UP(idx + 1); DOWN(idx + 1); LEFT(idx + 1); RIGHT(idx + 1); }
-}
-
-void DOWN(int idx)
-{
-    //스와이프 직후의 공간을 레퍼런스로 불러온다
-    vector<cell> &lst = board[idx + 1];
-
-    //기존 보드의 상태를 가져온다
-    lst.resize((int)(board[idx].size()));
-    copy(board[idx].begin(), board[idx].end(), lst.begin());
-
-    //cell을 x값이 작은 순으로, x값이 같다면 y값이 큰 순으로 정렬한다
-    sort(lst.begin(), lst.end(), [](cell &a, cell &b) {
-        if (a.x == b.x) return a.y > b.y;
-        return a.x < b.x;
-    });
-
-    //자신 바로 다음에 위치한 블럭이 같은 열에 있고, 같은 가중치를 가지고 있다면 두 블럭을 합친다
-    for (int i = 0; i < lst.size() - 1; i++)
-    {
-        if ((lst[i].x == lst[i + 1].x) && (lst[i].val == lst[i + 1].val))
-        {
-            lst[i].val *= 2;
-            lst.erase(lst.begin() + i + 1);
-
-            //블럭이 합쳐질 때마다 최고 가중치를 갱신한다
-            if (ret < lst[i].val) ret = lst[i].val;
-        }
-    }
-
-    //맨 첫 블록의 y좌표는 len - 1임이 자명하다
-    lst[0].y = len - 1;
-
-    //각 cell의 y좌표를 이전 cell과 비교하여 결정한다
-    //이전 cell이 자신과 같은 열에 있다면 y좌표는 이전 cell의 y좌표 - 1, 그렇지 않다면 len - 1
-    for (int i = 1; i < lst.size(); i++)
-    {
-        if (lst[i].x == lst[i - 1].x) lst[i].y = lst[i - 1].y - 1;
-        else                          lst[i].y = len - 1;
-    }
-
-    //스와이프를 재귀적으로 실행한다
-    if (idx < 4) { UP(idx + 1); DOWN(idx + 1); LEFT(idx + 1); RIGHT(idx + 1); }
-}
-
-void LEFT(int idx)
-{
-    //스와이프 직후의 공간을 레퍼런스로 불러온다
-    vector<cell> &lst = board[idx + 1];
-
-    //기존 보드의 상태를 가져온다
-    lst.resize((int)(board[idx].size()));
-    copy(board[idx].begin(), board[idx].end(), lst.begin());
-
-    //cell을 y값이 작은 순으로, x값이 같다면 x값이 작은 순으로 정렬한다
-    sort(lst.begin(), lst.end(), [](cell &a, cell &b) {
-        if (a.y == b.y) return a.x < b.x;
-        return a.y < b.y;
-    });
-
-    //자신 바로 다음에 위치한 블럭이 같은 행에 있고, 같은 가중치를 가지고 있다면 두 블럭을 합친다
-    for (int i = 0; i < lst.size() - 1; i++)
-    {
-        if ((lst[i].y == lst[i + 1].y) && (lst[i].val == lst[i + 1].val))
-        {
-            lst[i].val *= 2;
-            lst.erase(lst.begin() + i + 1);
-
-            //블럭이 합쳐질 때마다 최고 가중치를 갱신한다
-            if (ret < lst[i].val) ret = lst[i].val;
-        }
-    }
-
-    //맨 첫 블록의 x좌표는 0임이 자명하다
-    lst[0].x = 0;
-
-    //각 cell의 x좌표를 이전 cell과 비교하여 결정한다
-    //이전 cell이 자신과 같은 행에 있다면 x좌표는 이전 cell의 x좌표 + 1, 그렇지 않다면 0
-    for (int i = 1; i < lst.size(); i++)
-    {
-        if (lst[i].y == lst[i - 1].y) lst[i].x = lst[i - 1].x + 1;
-        else                          lst[i].x = 0;
-    }
-
-    //스와이프를 재귀적으로 실행한다
-    if (idx < 4) { UP(idx + 1); DOWN(idx + 1); LEFT(idx + 1); RIGHT(idx + 1); }
-}
-
-void RIGHT(int idx)
-{
-    //스와이프 직후의 공간을 레퍼런스로 불러온다
-    vector<cell> &lst = board[idx + 1];
-
-    //기존 보드의 상태를 가져온다
-    lst.resize((int)(board[idx].size()));
-    copy(board[idx].begin(), board[idx].end(), lst.begin());
-
-    //cell을 y값이 작은 순으로, x값이 같다면 x값이 큰 순으로 정렬한다
-    sort(lst.begin(), lst.end(), [](cell &a, cell &b) {
-        if (a.y == b.y) return a.x > b.x;
-        return a.y < b.y;
-    });
-
-    //자신 바로 다음에 위치한 블럭이 같은 행에 있고, 같은 가중치를 가지고 있다면 두 블럭을 합친다
-    for (int i = 0; i < lst.size() - 1; i++)
-    {
-        if ((lst[i].y == lst[i + 1].y) && (lst[i].val == lst[i + 1].val))
-        {
-            lst[i].val *= 2;
-            lst.erase(lst.begin() + i + 1);
-
-            //블럭이 합쳐질 때마다 최고 가중치를 갱신한다
-            if (ret < lst[i].val) ret = lst[i].val;
-        }
-    }
-
-    //맨 첫 블록의 x좌표는 len - 1임이 자명하다
-    lst[0].x = len - 1;
-
-    //각 cell의 x좌표를 이전 cell과 비교하여 결정한다
-    //이전 cell이 자신과 같은 행에 있다면 x좌표는 이전 cell의 x좌표 - 1, 그렇지 않다면 len - 1
-    for (int i = 1; i < lst.size(); i++)
-    {
-        if (lst[i].y == lst[i - 1].y) lst[i].x = lst[i - 1].x - 1;
-        else                          lst[i].x = len - 1;
-    }
-
-    //스와이프를 재귀적으로 실행한다
-    if (idx < 4) { UP(idx + 1); DOWN(idx + 1); LEFT(idx + 1); RIGHT(idx + 1); }
-}
-
-int main()
-{
-    int val;
-    scanf("%d", &len);
-
-    for (int i = 0; i < len * len; i++)
-    {
-        scanf("%d", &val);
-        if (ret < val) ret = val;
-        if (val != 0) board[0].push_back(cell(i % len, i / len, val));
-    }
-
-    //모든 과정은 재귀적으로 실행되므로 시작 부분만 실행해주면 된다
-    UP(0); DOWN(0); LEFT(0); RIGHT(0);
-
-    //최고 가중치를 출력한다
-    printf("%d\n", ret);
+    // 최대 5회 이동했을 때의 블록의 최댓값을 계산해 출력
+    brd.backtrack(5);
+    printf("%d\n", ans);
 
     return 0;
 }

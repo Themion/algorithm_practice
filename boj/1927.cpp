@@ -28,8 +28,7 @@ int get_child(int parent) {
 }
 
 int pop() {
-    // idx, cmp: swap할 노드의 인덱스
-    // ret: pop할 루트 노드
+    // idx, cmp: swap할 노드의 인덱스, ret: pop할 루트 노드
     int idx = 1, cmp, ret = heap[idx];
     
     // 루트 노드의 값을 마지막 노드로 바꾼 뒤 마지막 노드를 제거
@@ -37,8 +36,7 @@ int pop() {
     heap[heap[0]] = 0;
 
     // 루트 노드가 heap에 맞는 자리를 찾을 때까지 swap
-    while((cmp = get_child(idx)) != 0 && heap[idx] > heap[cmp]) 
-        idx = swap(idx, cmp);
+    while ((cmp = get_child(idx)) && heap[idx] > heap[cmp]) idx = swap(idx, cmp);
 
     // heap의 크기를 1 줄인다
     heap[0] -= (heap[0] > 0);
