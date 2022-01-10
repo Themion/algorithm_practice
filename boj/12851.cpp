@@ -1,71 +1,64 @@
 #include <cstdio>
 #include <queue>
 
-#define MAX 100000
+using namespace std;
 
-int N, K;
-int map[MAX + 1] = { 0, };
-bool visit[MAX + 1] = { false, };
-std::queue<int> q, vis;
+#define MAX_N 100000
 
-int main()
-{
-    bool found = false;
-    int time = 0, size, node;
+int main() {
+    // visit[i]: t초에 점 i로 이동 가능하다면 true, 아니라면 false
+    bool visit[MAX_N + 1] = { 0, };
+    // N, K: 시작점과 도착점, cnt[i]: 노드 i로 갈 수 있는 방법의 수
+    // t: 도착 노드까지 걸리는 시간
+    int N, K, cnt[MAX_N + 1] = { 0, }, t = 0;
+    // q: bfs 탐색에서 방문할 노드를 저장한 큐, vis: 방문함을 표시할 노드의 큐
+    queue<int> q, vis;
 
+    // 시작점과 도착점을 입력받은 뒤
     scanf("%d %d", &N, &K);
-    // N에서 N으로 이동할 때 걸리는 연산의 수는 1이라고 가정
-    map[N] = 1;
-    // 시작점을 q에 push
-    q.push(N);
 
-    // N이 K보다 큰 경우 가능한 연산은 -1 뿐이므로 이를 계산한다
-    if (N > K) 
-    {
-        time = N - K + 1;
-        map[K] = 1;
-    }
-    // N에서 K까지 갈 수 있는 방법이 다수 존재할 때
-    else while (!found)
-    {
-        // step을 계산하는 문제이므로 while문을 이중으로 둔다
-        size = q.size();
-        while (size--)
-        {
-            // q에서 원소를 하나 가져와 K인지 검토
-            node = q.front();
-            q.pop();
-            if (node == K) found = true;
-            // 이 원소가 K가 아닌 경우, 즉 K로 가는 과정에 위치할 경우
-            // 이후 연산을 거쳐 범위 내에 있을 때
-            // 또한 이전에 방문한 적이 없어 경로를 낭비하지 않을 때
-            else for (auto t : {node - 1, node + 1, node * 2})
-                if (0 <= t && t <= MAX && !visit[t])
-                {
-                    // 같은 step 안에 방문한 적이 없다면 q에 넣는다
-                    if (!map[t]) 
-                    {
-                        q.push(t);
-                        vis.push(t);
+    // 시작점이 도착점보다 크거나 같다면 후퇴만을 이용해 도착 가능하고
+    // 이 때 걸리는 시간은 N - K, 가능한 방법의 수는 1이다
+    if (N >= K) t = N - K, cnt[K] = 1;
+    // 그렇지 않다면
+    else {
+        // 시작 노드 N을 q에 넣고
+        q.push(N);
+        // N에 도착하는 방법, 즉 초기 상태의 경우의 수인 1을 cnt[N]에 저장
+        cnt[N] = 1;
+
+        // K에 도착할 때까지 시간을 1씩 늘리며 탐색
+        for (; !cnt[K]; t++) {
+            // 현재 시간에 방문 가능한 모든 노드에 대해
+            for (int len = q.size(); len--; ) {
+                // 각 노드를 q에서 하나씩 가져온 뒤
+                N = q.front();
+                q.pop();
+
+                // 해당 노드와 인접한 노드 n에 대해
+                for (auto n : {N - 1, N + 1, N * 2})
+                    // 노드 n이 범위 이내이고 방문한 적 없다면
+                    if (n >= 0 && n <= MAX_N && !visit[n]) {
+                        // 노드 n을 한 번만 탐색하고
+                        if (!cnt[n]) {
+                            q.push(n);
+                            vis.push(n);
+                        }
+                        // 현재 노드로 이동 가능한 경우의 수만큼
+                        // 노드 n으로 이동 가능한 경우의 수를 늘린다
+                        cnt[n] += cnt[N];
                     }
-                    // 현재 노드로 이동할 수 있는 경우의 수를
-                    // 직전 노드까지 이동할 수 있는 경우의 수만큼 더한다
-                    map[t] += map[node];
-                }
+            }
+            // 경우의 수를 계산한 모든 노드에 대해 방문했음을 visit에 표시
+            while (!vis.empty()) {
+                visit[vis.front()] = true;
+                vis.pop();
+            }
         }
-        // 이번 step에 방문한 노드를 이후 step에서 방문할 경우
-        // 경로\가 낭비되어 불필요한 연산이 늘어나므로 방문을 막는다
-        while(!vis.empty())
-        {
-            visit[vis.front()] = true;
-            vis.pop();
-        }
-        // step을 한 횟수를 증가
-        time++;
     }
 
-    // step의 수와 경우의 수를 출력
-    printf("%d\n%d\n", time - 1, map[K]);
+    // 노드 K에 도착하는 데 걸리는 최소 시간과 그 방법의 수를 출력
+    printf("%d\n%d\n", t, cnt[K]);
 
     return 0;
 }
