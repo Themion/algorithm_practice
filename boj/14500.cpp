@@ -1,66 +1,83 @@
-#include <cstdio>
+#include <iostream>
 
-short t[500][500] = {{ 0, }};   // t: 입력받는 종이
-int N, M;                       // 종이의 크기
+using namespace std;
 
-// 좌표를 입력받아 t에서 해당 좌표를 읽을 수 있는지 확인
-bool valid(int y, int x) { return y >= 0 && y < N && x >= 0 && x < M; }
+#define MAX_N 500
 
-// 두 수, 혹은 세 수를 입력받아 그 중 가장 큰 값을 반환
-short max(short a, short b) { return a > b ? a : b; }
-short max(short a, short b, short c) { return max(a, max(b, c)); }
+int N, M;
+short t[MAX_N + 1][MAX_N + 1];
 
-// 왼쪽 위 좌표가 (y, x)인 2 * 3, 3 * 2 박스 안에서
-// 최대값을 가지는 테트로미노의 값을 계산 
-short search(int y, int x)
-{
-    // v: 3 * 2, h: 2 * 3 크기 박스에서 각 성분값
-    // v_sum, h_sum: 각각 v, h를 이루는 값들의 합
-    short ret = 0, v[6], h[6], v_sum = 0, h_sum = 0;
+// cmp3의 이름이 max일 때 ‘__comp’ cannot be used as a function 에러 발생
+int cmp2(int a, int b) { return a > b ? a : b; }
+int cmp3(int a, int b, int c) { return cmp2(cmp2(a, b), c); }
 
-    //v, h의 값을 계산한다
-    // 박스가 t의 범위를 벗어난다면 해당 위치의 값은 0으로 간주
-    for (int i = 0; i < 2; i++) for (int j = 0; j < 3; j++)
-    {
-        v[i * 3 + j] = valid(y + i, x + j) ? t[y + i][x + j] : 0;
-        v_sum += v[i * 3 + j];
-        h[i * 3 + j] = valid(y + j, x + i) ? t[y + j][x + i] : 0;
-        h_sum += h[i * 3 + j];
+short search(int y, int x) {
+    // ret: 실제로 비교할 테트로미노의 총합, temp: 계산식 길이를 줄이기 위한 변수
+    short ret = 0, temp;
+
+    // 세로 |자 비교
+    if (y + 3 <= N)
+        ret = cmp2(ret, t[y][x] + t[y + 1][x] + t[y + 2][x] + t[y + 3][x]);
+    if (y + 2 <= N) {
+        // 한 칸 짜리가 왼쪽에 있는 세로 L, T자 비교
+        // 한 칸 짜리의 최댓값을 temp에 저장한 뒤 세 칸 짜리와 더해 비교
+        temp = cmp3(t[y][x - 1], t[y + 1][x - 1], t[y + 2][x - 1]);
+        ret = cmp2(ret, t[y][x] + t[y + 1][x] + t[y + 2][x] + temp);
+
+        // 한 칸 짜리가 오른쪽에 있는 세로 L, T자 비교
+        // 한 칸 짜리의 최댓값을 temp에 저장한 뒤 세 칸 짜리와 더해 비교
+        temp = cmp3(t[y][x], t[y + 1][x], t[y + 2][x]);
+        ret = cmp2(ret, t[y][x - 1] + t[y + 1][x - 1] + t[y + 2][x - 1] + temp);
+
+        // 세로 S자, O자 비교
+        // 세 경우에 포함되지 않는 끄트머리 두 칸끼리 비교해 더한 뒤
+        // 반드시 포함되는 가운데 두 칸과 더한 값을 비교
+        temp = cmp2(t[y][x], t[y + 2][x]) + cmp2(t[y][x - 1], t[y + 2][x - 1]);
+        ret = cmp2(ret, t[y + 1][x] + t[y + 1][x - 1] + temp);
     }
 
-    // 박스 안에서 무작위로 두 값을 빼 테트로미노를 만든다
-    // 이 때 테트로미노를 만들 수 없는 값의 조합은 계산하지 않는다
-    for (int i = 0; i < 6; i++) for (int j = i + 1; j < 6; j++)
-        if ((i % 3 != 1 && j % 3 != 1) || i / 3 == j / 3)
-            ret = max(ret, v_sum - (v[i] + v[j]), h_sum - (h[i] + h[j]));
+    // 가로 |자 비교
+    if (x + 3 <= M)
+        ret = cmp2(ret, t[y][x] + t[y][x + 1] + t[y][x + 2] + t[y][x + 3]);
+    if (x + 2 <= M) {
+        // 한 칸 짜리가 위쪽에 있는 가로 L, T자 비교
+        // 한 칸 짜리의 최댓값을 temp에 저장한 뒤 세 칸 짜리와 더해 비교
+        temp = cmp3(t[y - 1][x], t[y - 1][x + 1], t[y - 1][x + 2]);
+        ret = cmp2(ret, t[y][x] + t[y][x + 1] + t[y][x + 2] + temp);
+
+        // 한 칸 짜리가 아래쪽에 있는 가로 L, T자 비교
+        // 한 칸 짜리의 최댓값을 temp에 저장한 뒤 세 칸 짜리와 더해 비교
+        temp = cmp3(t[y][x], t[y][x + 1], t[y][x + 2]);
+        ret = cmp2(ret, t[y - 1][x] + t[y - 1][x + 1] + t[y - 1][x + 2] + temp);
+
+        // 가로 S자, O자 비교
+        // 세 경우에 포함되지 않는 끄트머리 두 칸끼리 비교해 더한 뒤
+        // 반드시 포함되는 가운데 두 칸과 더한 값을 비교
+        temp = cmp2(t[y][x], t[y][x + 2]) + cmp2(t[y - 1][x], t[y - 1][x + 2]);
+        ret = cmp2(ret, t[y][x + 1] + t[y - 1][x + 1] + temp);
+    }
 
     return ret;
 }
 
-// |자, 혹은 ㅡ자 블록은 search 함수로 계산할 수 없으므로 하드코딩
-short search_I(int y, int x)
-{
-    short v = 0, h = 0;
-    if (y < N - 3) v = t[y][x] + t[y + 1][x] + t[y + 2][x] + t[y + 3][x];
-    if (x < M - 3) h = t[y][x] + t[y][x + 1] + t[y][x + 2] + t[y][x + 3];
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-    return max(v, h);
-}
+    // 테트로미노가 놓인 칸에 쓰인 수들의 합의 최댓값
+    short ans = 0;
 
-int main()
-{
-    short ret = 0;
-    scanf("%d %d", &N, &M);
+    // 문제의 조건을 입력받은 뒤
+    cin >> N >> M;
+    for (int i = 1; i <= N; i++) for (int j = 1; j <= M; j++) cin >> t[i][j];
 
-    for (int i = 0; i < N; i++) for (int j = 0; j < M; j++)
-        scanf("%hd", &t[i][j]);
+    // 칸 (i, j)를 포함하도록 놓인 테트로미노가 놓인 칸의 수의 합을 계산
+    for (int i = 1; i <= N; i++) for (int j = 1; j <= M; j++)
+        ans = cmp2(ans, search(i, j));
 
-    // 모든 좌표에 대해 가능한 테트로미노의 값을 계산하여
-    // max 함수를 통해 ret에 최대값을 저장
-    for (int i = 0; i < N; i++) for (int j = 0; j < M; j++)
-        ret = max(ret, search(i, j), search_I(i, j));
-
-    printf("%hd\n", ret);
+    // 계산한 합의 최댓값을 출력
+    cout << ans << '\n';
 
     return 0;
 }
