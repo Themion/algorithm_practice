@@ -40,7 +40,7 @@ int main() {
     }
 
     // 최단 거리를 출력한다
-    printf("%d\n", mde[a][b]);
+    printf("%d\n", mde[a % 2][b]);
 
     return 0;
 }
