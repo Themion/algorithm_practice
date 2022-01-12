@@ -1,21 +1,21 @@
-#include <cstdio>
+#include <iostream>
 
-int main()
-{
-	//num : 테스트 케이스의 수
-	//a, b : 더할 두 수
-	int num, a, b;
+using namespace std;
 
-	//테스트 케이스를 입력받는다
-	scanf("%d", &num);
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-	//테스트 케이스만큼 반복
-	for (int i = 0; i < num; i++)
-	{
-		//a와 b를 입력받아 둘의 합을 출력한다
-		scanf("%d %d", &a, &b);
-		printf("%d\n", a + b);
-	}
+    // T: 테스트 케이스의 개수, A, B: 더할 두 수
+    int T, A, B;
+
+    // 테스트 케이스를 입력받아 각 테스트 케이스의 결과를 출력
+    for (cin >> T; T--; ) {
+        cin >> A >> B;
+        cout << A + B << '\n';
+    }
 
     return 0;
 }

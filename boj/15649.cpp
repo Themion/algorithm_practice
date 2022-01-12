@@ -1,41 +1,37 @@
 #include <cstdio>
 
-// visit[i]: 수 i가 수열에 들어간다면 true, 아니라면 fasle
-bool visit[8];
-// arr[i]: 수열의 i번째 수
-int N, M, arr[8];
+#define MAX_N 8
 
-// 수열 생성
-void recursive(int cnt)
-{
-    // 만든 수열의 길이가 M일 때 수열을 차례로 출력
-    if (cnt == M)
-    {
-        for (int i = 0; i < M; i++) printf("%d ", arr[i]);
-        printf("\n");
+// visit[i]: 수열에 i가 사용되었다면 true, 아니라면 false
+bool visit[MAX_N + 1];
+// str: 출력할 수열을 문자열 형태로 저장
+char str[2 * MAX_N + 1];
+// N: 사용할 자연수의 종류, M: 수열의 길이
+int N, M;
+
+void backtrack(int len) {
+    // len이 M * 2라면 수열을 모두 채운 것이므로 수열을 출력한 뒤 종료
+    if (len == M * 2) {
+        printf("%s\n", str);
         return;
     }
-    // 수열을 만들 수 있는 각 수 중 수열에 포함되지 않은 수에 대해
-    for (int i = 0; i < N; i++) if (!visit[i])
-    {
-        // 수열에 그 수를 넣은 뒤
+
+    // 1부터 N 중 사용되지 않은 수가 있다면
+    for (int i = 1; i <= N; i++) if (!visit[i]) {
+        // 수열에 추가한 뒤
+        str[len] = i + '0';
+        str[len + 1] = ' ';
         visit[i] = true;
-        arr[cnt] = i + 1;
-
-        // 만들어진 수열의 부분집합을 출력하고
-        recursive(cnt + 1);
-
-        // 수열에서 수를 제거
-        arr[cnt] = 0;
+        // 수열의 다음 수를 채우고
+        backtrack(len + 2);
+        // 수열에서 i를 제거
         visit[i] = false;
     }
 }
 
-int main()
-{
-    // N과 M을 입력받아 수열을 생성한다
+int main() {
+    // N과 M을 입력받은 뒤 조건을 만족하는 수열을 모두 출력
     scanf("%d %d", &N, &M);
-    recursive(0);
-    
+    backtrack(0);
     return 0;
 }

@@ -5,8 +5,6 @@ using namespace std;
 
 #define MAX_N 8
 
-// visit[i]: 수열에 i가 사용되었다면 true, 아니라면 false
-bool visit[MAX_N + 1];
 // N: 사용할 자연수의 종류, M: 수열의 길이, item: 수열에 쓰일 각 수, arr: 만든 수열
 int N, M, item[MAX_N], arr[MAX_N];
 
@@ -18,15 +16,11 @@ void backtrack(int len) {
         return;
     }
 
-    // 아직 사용되지 않은 수가 있다면
-    for (int i = 0; i < N; i++) if (!visit[i]) {
-        // 수열에 추가한 뒤
+    // 사용 가능한 수가 있다면
+    for (int i = 0; i < N; i++) {
+        // 수열에 추가한 뒤 수열의 다음 수를 채운다
         arr[len] = item[i];
-        visit[i] = true;
-        // 수열의 다음 수를 채우고
         backtrack(len + 1);
-        // 수열에서 i를 제거
-        visit[i] = false;
     }
 }
 

@@ -1,29 +1,22 @@
 #include <cstdio>
 
-//R, M: 해시 함수를 sigma(a, R^i) % M로 정의
-const int R = 31;
-const int M = 1234567891;
+#define R 31
+#define M 1234567891
 
-int main()
-{
-    int n;                      //해시 입력의 길이
-    char str[50];               //해시 입력
-    unsigned long long ret = 0; //해시 출력
+// 문자를 하나 입력받아 기존 해싱 결과와 더해 해싱
+long long hashing(int L) {
+    // 문자 하나를 입력받은 뒤
+    char c = getchar();
+    // 문자열의 길이가 0이라면 0을 반환
+    if (!L) return 0;
+    // 그렇지 않다면 주어진 방식대로 현재 문자를 해싱해 반환
+    return (hashing(L - 1) * R + c - 'a' + 1) % M;
+}
 
-    scanf("%d\n", &n);
-    for (int i = 0; i < n; i++) scanf("%c", str + i);
-
-    //해시 입력의 뒷자리부터 차례로
-    for (int i = n - 1; i >= 0; i--)
-    { 
-        //지금까지 해싱한 것에 계수를 한 번 곱한 뒤 추가된 문자를 더한다
-        ret = ret * R + (str[i] - 'a' + 1);
-        //해시 함수이므로 큰 소수 M으로 나눠준다
-        ret %= M;
-    }
-
-    //해싱한 결과를 출력
-    printf("%lld\n", ret);
-
+int main() {
+    // 문자열의 길이를 입력받아 문자열을 해싱한 뒤 출력
+    int L;
+    scanf("%d\n", &L);
+    printf("%lld\n", hashing(L));
     return 0;
 }

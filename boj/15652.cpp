@@ -1,31 +1,31 @@
 #include <cstdio>
 
-// idx: 수열의 현재 크기, arr: 수열을 저장할 배열
-int N, M, idx = 0, arr[10];
+#define MAX_N 8
 
-void backtrack(int start)
-{
-    // 수열의 크기가 M이 되었을 때 수열을 출력
-    if (idx == M)
-    {
-        for (int i = 0; i < M; i++) printf("%d ", arr[i]);
-        printf("\n");
+// str: 출력할 수열을 문자열 형태로 저장
+char str[2 * MAX_N + 1];
+// N: 사용할 자연수의 종류, M: 수열의 길이
+int N, M;
+
+void backtrack(int len, int last) {
+    // len이 M * 2라면 수열을 모두 채운 것이므로 수열을 출력한 뒤 종료
+    if (len == M * 2) {
+        printf("%s\n", str);
         return;
     }
 
-    // 시작점부터 N까지 가능한 수를 모두 수열에 넣는다
-    for (int i = start; i <= N; i++)
-    {
-        arr[idx++] = i;
-        backtrack(i);
-        arr[idx--] = 0;
+    // last부터 N 중 사용 가능한 수가 있다면
+    for (int i = last; i <= N; i++) {
+        // 수열에 추가한 뒤 수열의 다음 수를 채운다
+        str[len] = i + '0';
+        str[len + 1] = ' ';
+        backtrack(len + 2, i);
     }
 }
 
-int main()
-{
+int main() {
+    // N과 M을 입력받은 뒤 조건을 만족하는 수열을 모두 출력
     scanf("%d %d", &N, &M);
-    backtrack(1);
-
+    backtrack(0, 1);
     return 0;
 }
