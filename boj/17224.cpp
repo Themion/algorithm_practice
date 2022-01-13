@@ -1,35 +1,31 @@
-#include <algorithm>
 #include <cstdio>
 
-//sub[i][j]: i번 문제의 (j == 0: 쉬움, 1: 쉬움+어려움)의 점수
-//solve[i]: i번 문제를 풀었을 때 얻을 수 있는 최대 점수
-int sub[100][2], solve[100];
+int min(int a, int b) { return a < b ? a : b; }
 
-int main()
-{
-	//N: 문제의 수, L: 역량, K: 문제의 최대 갯수
-	int N, L, K;
-	//N, L, K를 입력받는다
-	scanf("%d %d %d", &N, &L, &K);
+int main(){
+    // N: 문제의 개수, L: 역량, K: 풀 수 있는 문제 수
+    // sub1: 쉬운 문제의 난이도, sub2: 어려운 문제의 난이도, ans: 총점
+    int N, L, K, sub1, sub2, ans = 0;
+    // solve[i]: { 못 푼 문제, 쉬운 문제, 어려운 문제 }[i]를 푼 개수
+    // score[i]: { 못 푼 문제, 쉬운 문제, 어려운 문제 }[i]의 점수
+    short solve[3] = { 0, }, score[3] = { 0, 100, 140 };
 
-	//각 문제의 난이도를 입력받는다
-	for (int i = 0; i < N; i++)
-	{
-		scanf("%d %d", &sub[i][0], &sub[i][1]);
-		//문제를 풀 수 있다면 해당 점수만큼 solve의 값을 더한다
-		if (sub[i][0] <= L) solve[i] += 100;
-		if (sub[i][1] <= L) solve[i] += 40;
-	}
+    // 문제의 조건을 입력받으면서 각 문제에 대해
+    for (scanf(" %d %d %d", &N, &L, &K); N--; ) {
+        // 각 문제를 역량별로 분류해 문제수를 저장
+        scanf("%d %d", &sub1, &sub2);
+        solve[(sub2 <= L) + (sub1 <= L)]++;
+    }
 
-	//점수를 정렬하여 작은 순서대로 나열한다
-	std::sort(solve, solve + N);
+    // 각 분류에 대해 얻는 점수가 큰 순으로 문제를 푼다
+    for (int i = 2; i; i--) {
+        L = min(K, solve[i]);
+        ans += L * score[i];
+        K -= L;
+    }
 
-	//출력할 값을 저장할 공간으로 L을 사용
-	L = 0;
-	//얻을 수 있는 가장 큰 점수부터 K개 점수를 더한다
-	for (int i = 1; i <= K; i++) L += solve[N - i];
-	//얻을 수 있는 최대 점수를 출력한다
-	printf("%d\n", L);
+    // 문제를 풀어서 얻은 총점을 출력
+    printf("%d\n", ans);
 
     return 0;
 }

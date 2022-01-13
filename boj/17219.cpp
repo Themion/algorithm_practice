@@ -4,8 +4,7 @@
 
 using namespace std;
 
-int main()
-{
+int main() {
 	//cin, cout 사용 시 필히 사용할 것
 	ios::sync_with_stdio(false);
 	cin.tie(NULL);
@@ -21,15 +20,13 @@ int main()
     unordered_map<string, string> m;
 
     cin >> N >> M;
-    while(N--)
-    {
+    while (N--) {
         // 도메인과 비밀번호를 읽어와 m에 저장
         cin >> domain >> pw;
         m.insert({domain, pw});
     }
 
-    while(M--)
-    {
+    while (M--) {
         // 도메인을 읽어와 해당 도메인의 비밀번호를 출력
         cin >> domain;
         cout << m.find(domain)->second << '\n';

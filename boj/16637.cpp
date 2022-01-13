@@ -1,7 +1,9 @@
 #include <cstdio>
 
+// method[i]: i번째로 나온 연산자
 char method[9];
-int len, val[10];
+// N: 수식의 길이, val[i]: i번째로 나온 수
+int N, val[10];
 
 int max(int a, int b) { return a > b ? a : b; }
 
@@ -15,13 +17,13 @@ int calc(int a, int b, char method) {
 // i번째 연산 이전의 연산을 모두 마친 뒤(이 때의 결과값을 pre라 가정) 
 // 이후 연산을 계산
 int brute_force(int i, int pre) {    
-    // i가 len / 2라면, 즉 모든 연산을 마쳤다면 pre를 반환
-    if (i == len / 2) return pre; 
-    // i가 len / 2보다 크다면 에러 처리를 위해 int의 최솟값을 반환
-    else if (i > len / 2) return __INT_MAX__ + 1;
+    // i가 N / 2라면, 즉 모든 연산을 마쳤다면 pre를 반환
+    if (i == N / 2) return pre; 
+    // i가 N / 2보다 크다면 에러 처리를 위해 int의 최솟값을 반환
+    else if (i > N / 2) return __INT_MAX__ + 1;
 
     // no_brac: i번째 연산에서 괄호를 사용하지 않을 경우
-    // brac:                         사용할 경우
+    // brac:    i번째 연산에서 괄호를 사용할 경우
     // 전체 식을 계산하기 전에 각 변수에
     // pre에 i번째 식(혹은 괄호식)을 계산한 값을 저장
     int no_brac = calc(pre, val[i + 1], method[i]),
@@ -36,8 +38,8 @@ int main() {
     char buf;
 
     // 식의 길이를 입력받은 뒤
-    scanf("%d%*c", &len);
-    for (int i = 0; i < len; i++) {
+    scanf("%d%*c", &N);
+    for (int i = 0; i < N; i++) {
         // 식의 각 글자에 대해
         scanf("%c", &buf);
         // 해당 글자가 홀수번째 글자라면 연산자임이 자명함으로
