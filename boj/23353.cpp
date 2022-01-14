@@ -1,8 +1,7 @@
-#include <cstdio>
+#include <iostream>
 #include <queue>
 
 using namespace std;
-
 
 // 각 백돌의 좌표 (y, x)를 pair로 저장해 큐에 push
 typedef pair<int, int> coord;
@@ -23,15 +22,14 @@ typedef queue<coord> que;
 //2: 기울기 1 대각
 //3: 기울기 -1 대각
 
-int N, ans = 0;
-int add[4][2] = { {1, 0}, {0, 1}, {1, 1}, {1, -1} };
+// N: 게임판의 크기, ans: 최장 연속 흑돌의 길이
+// ans: { 가로, 세로, 기울기 1 대각선, 기울기 -1 대각선}[dir]방향 변위
+int N, ans = 0, add[4][2] = { {1, 0}, {0, 1}, {1, 1}, {1, -1} };
 // board: 냥목 게임판
 // score[dir][y][x]: 게임판에서 좌표 (y, x)를 포함한 dir 방향의 연속된 흑돌의 길이
 short board[MAX_N][MAX_N], score[4][MAX_N][MAX_N];
 
-// a와 b 중 더 큰 값을 a에 저장
-template <typename T1, typename T2>
-void set_max(T1 &a, T2 b) { a = a > b ? a : b; }
+int max(int a, int b) { return a > b ? a : b; }
 
 // 좌표 (y, x)가 바둑판 위에 존재한다면 true, 아니라면 false
 bool is_valid(int y, int x) { return y >= 0 && y < N&& x >= 0 && x < N; }
@@ -49,22 +47,29 @@ int set_score(int dir, int y, int x) {
         // 다음 값을 재귀적으로 계산한 뒤 현재값과 비교해
         // 더 큰 값을 현재 연속값으로 갱신
         if (NOW && is_valid(y + dY, x + dX))
-            set_max(NOW, set_score(dir, y + dY, x + dX));
+            NOW = max(NOW, set_score(dir, y + dY, x + dX));
     }
     // 이전에 계산한 흑돌의 길이와 현재 흑돌의 길이를 비교
-    set_max(ans, NOW);
+    ans = max(ans, NOW);
     // 계산된 흑돌의 길이를 반환
     return NOW;
 }
 
 int main() {
-    int y, x;
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    // y, x: 각 좌표, chk: 백돌을 흑돌로 바꿨을 때 갱신된 흑돌의 연속값
+    int y, x, chk;
+    // q: 백돌의 좌표의 집합
     que q;
 
     // 게임판의 상태를 입력받으면서 백돌의 좌표를 q에 push
-    scanf("%d", &N);
+    cin >> N;
     for (y = 0; y < N; y++) for (x = 0; x < N; x++) {
-        scanf("%hd", &(board[y][x]));
+        cin >> board[y][x];
         if (board[y][x] == 2) q.push({ y, x });
     }
 
@@ -106,17 +111,17 @@ int main() {
         // 각 방향에 대해
         for (int dir = 0; dir < 4; dir++) {
             // 백돌을 흑돌로 바꾸었으므로 연속값의 최솟값은 반드시 1
-            int chk = 1;
+            chk = 1;
             // 이전 좌표값과 다음 좌표값이 존재한다면 해당 연속값을 더한다
             if (is_valid(y - dY, x - dX)) chk += PREV;
             if (is_valid(y + dY, x + dX)) chk += POST;
             // 최댓값 갱신
-            set_max(ans, chk);
+            ans = max(ans, chk);
         }
     }
 
     // 가장 큰 연속된 흑돌의 길이를 출력
-    printf("%d\n", ans);
+    cout << ans << '\n';
 
     return 0;
 }

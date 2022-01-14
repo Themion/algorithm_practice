@@ -1,13 +1,10 @@
 #include <cstdio>
 
-// col[i % 2][j] : i번째 집을 j번째 색으로 칠할 때 드는 비용
-int col[2][3] = {{ 0, }};
-
 int min(int a, int b) { return a < b ? a : b; }
 
 int main() {
-    // 집의 개수
-    int N;
+    // N: 집의 개수, col[i % 2][j]: i번째 집을 j번째 색으로 칠할 때 드는 비용
+    int N, col[2][3] = {{ 0, }};
     scanf("%d", &N);
 
     // i번 집을 색칠할 때

@@ -1,63 +1,41 @@
 #include <cstdio>
 
-int abs(int i) { return i > 0 ? i : -i; }
+#define MAX_L 9
 
-int main()
-{
-	//input: 패턴을 순서대로 저장한다
-	//cnt: 패턴에 쓰인 노드의 수를 입력받는다
-	//diff[i]: 각 노드 간의 (i==0: 수직, 1:수평) 방향으로의 차
-	int input[9], cnt, diff[2];
-	//chk[i]: i번 노드가 이미 등장했다면 true, 아니라면 false
-	//done[i]: i번 노드가 가능한 노드라면 true, 아니라면 false
-	bool chk[9] = { false, }, done[9] = { false, };
+int abs(int n) { return n < 0 ? -n : n; }
+int max(int a, int b) { return a > b ? a : b; }
+int min(int a, int b) { return a < b ? a : b; }
 
-	//패턴을 입력받는다
-	//이 때 패턴 안에 중복된 수가 들어오면 해당 패턴은 잘못된 패턴
-	scanf("%d", &cnt);
-	for (int i = 0; i < cnt; i++)
-	{
-		scanf("%d", &input[i]);
-		input[i] -= 1;
+int main() {
+    // visit[i]: 점 i를 방문했다면 true, 아니라면 false
+    bool visit[MAX_L + 1] = { 1, };
+    // mid[a][b]: 두 점 a, b 사이에 낀 점
+    char mid[MAX_L + 1][MAX_L + 1] = {{ 0, }};
+    // L: 패턴에서 남은 점의 개수, A: 현재 점, a: 이전 점
+    int L, A, a = 0;
 
-		if (chk[input[i]])
-		{
-			printf("NO\n");
-			return 0;
-		}
+    // 애드혹 방식으로 mid를 초기화
+    mid[1][3] = mid[3][1] = 2;
+    mid[1][7] = mid[7][1] = 4;
+    mid[4][6] = mid[6][4] = mid[2][8] = mid[8][2] = 
+        mid[1][9] = mid[9][1] = mid[3][7] = mid[7][3] = 5;
+    mid[3][9] = mid[9][3] = 6;
+    mid[7][9] = mid[9][7] = 8;
 
-		chk[input[i]] = true;
-	}
+    // 점의 개수를 입력받은 뒤 각 점에 대해
+    for (scanf("%d", &L); L; L--) {
+        // 현재 점을 입력받고
+        scanf("%d", &A);
+        // 현재 점이 이미 방문한 점이거나
+        // 현재 점과 이전 점 사이에 방문하지 않은 점이 있다면 break
+        if (visit[A] || !visit[mid[A][a]]) break;
+        // 이전 점에 현재 점을 저장하고 현재 점을 방문했음을 표시
+        visit[a = A] = true;
+    }
 
-	//패턴의 맨 첫번째 노드는 항상 가능하다
-	done[input[0]] = true;
-
-	//패턴의 두 번째 노드부터 모든 노드에 대해
-	for (int i = 1; i < cnt; i++)
-	{
-		//직전 노드와의 차를 구한다
-		diff[0] = abs((input[i] % 3) - (input[i - 1] % 3));
-		diff[1] = abs((input[i] / 3) - (input[i - 1] / 3));
-
-		//좌표차가 0이거나 2인 부분이 있다면
-		if ((diff[0] % 2 == 0) && (diff[1] % 2 == 0))
-		{
-			//두 노드 사이에 끼인 노드가 아직 등장한 적 없다면
-			//해당 패턴은 잘못된 패턴
-			diff[0] = (input[i] + input[i - 1]) / 2;
-			if (!done[diff[0]])
-			{
-				printf("NO\n");
-				return 0;
-			}
-		}
-
-		//현재 노드는 가능한 노드이므로 이를 표시한다
-		done[input[i]] = true;
-	}
-
-	//모든 노드가 가능한 노드이므로 YES를 출력한다
-	printf("YES\n");
+    // L이 0이 아니라면 패턴이 중간에 멈춘 것이므로 NO를
+    // 그렇지 않다면    패턴을 완성시킨 것이므로 YES를 출력
+    printf("%s\n", L ? "NO" : "YES");
 
     return 0;
 }

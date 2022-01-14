@@ -1,95 +1,63 @@
-#include <cstdio>
+#include <iostream>
 
-//stu[j][i][input]: j차 신청에서 i번째 학생이 
-//                  input번째 과목을 신청해 성공했다면 true, 
-//                                  아니라면 false
-bool stu[2][1000][1001];
+using namespace std;
 
-//cls[i]: i번째 수업의 정원
-//stu_cls[j][i]: j차 신청에서 i번째 수업을 신청한 학생 수
-int cls[1001], stu_cls[2][1001];
+#define MAX_N 1000
+#define MAX_M 1000
 
-//stu_num: 학생 수, cls_num: 과목 수
-int stu_num, cls_num;
+// reg[n][m]: 학생 n이 과목 m의 수강신청에 성공했다면 true, 아니라면 false
+bool reg[MAX_N][MAX_M + 1];
+// N: 학생의 수, M: 과목의 수, len[n]: 학생 n이 수강신청에 성공한 과목 수
+int N, M, L[MAX_M + 1], len[MAX_N];
 
-//time번째 수강바구니 입력
-void class_bucket(int time)
-{
-    //입력을 대신할 버퍼
-    int input;
+void test_case() {
+    // bucket[n][m]: 학생 n이 과목 m을 수강바구니에 넣었다면 true, 아니라면 false
+    bool bucket[MAX_N][MAX_M + 1] = {{ 0, }};
+    // n, m: 학생과 과목을 가리킬 인덱스
+    // cnt[m]: 과목 m이 수강바구니에 남긴 횟수
+    int n, m, cnt[MAX_M + 1] = { 0, };
 
-    //각 학생에 대해
-    for (int i = 0; i < stu_num; i++)
-    {
-        //입력 맨 마지막에 -1이 들어가 있으므로
-        //먼저 한 번 입력받은 뒤 while문을 실행시킨다
-        scanf("%d", &input);
-        //아직 신청한 과목이 남아있는 경우
-        while (input != -1)
-        {
-            //time번째에 학생 i가 input번째 과목을 신청했음을 표시한 뒤
-            stu[time][i][input] = true;
-            //time번째에 input번째 과목을 신청한 학생 수를 1 늘린다
-            stu_cls[time][input] += 1;
-
-            //학생 i가 아직 신청한 과목이 있는지 확인
-            scanf("%d", &input);
-        }
-    }
-}
-
-//time번째 수강바구니 확인
-void bucket_check(int time)
-{
-    //각 과목에 대해
-    for (int i = 1; i <= cls_num; i++)
-    {
-        //과목의 여석이 time번째 신청한 학생 수보다 적다면
-        if(cls[i] < stu_cls[time][i])
-            //과목이 터졌으므로 time번째에 i 과목을 신청한 학생들은
-            //수강바구니에서 i 과목을 제거해야 한다
-            for(int j = 0; j < stu_num; j++) stu[time][j][i] = false;
-        //과목의 여석을 신청한 학생 수만큼 줄인다
-        cls[i] -= stu_cls[time][i];
-    }
-}
-
-int main()
-{
-    //학생 수와 과목 수를 입력받은 뒤
-    scanf("%d %d", &stu_num, &cls_num);
-    //각 과목의 여석을 입력받는다
-    for (int i = 1; i <= cls_num; i++) scanf("%d", &cls[i]);
-
-    //수강바구니는 2회 열리므로
-    //수강바구니를 입력받은 뒤 터진 과목이 없는지 확인한다
-    for (int i = 0; i < 2; i++)
-    {
-        class_bucket(i);
-        bucket_check(i);
+    // 각 학생의 수강바구니를 입력받아 bucket에 저장하고 cnt를 갱신
+    for (n = 0; n < N; n++) while (cin >> m && m != -1) {
+        bucket[n][m] = true;
+        cnt[m] += 1;
     }
     
-    //각 학생에 대해
-    for (int i = 0; i < stu_num; i++)
-    {
-        //한 과목이라도 정상적으로 수강신청 된 경우 true, 아니라면 false
-        bool chk = false;
+    // 각 학생의 수강바구니에 과목이 하나 이상 존재할 때
+    for (m = 1; m <= M; m++) if (cnt[m]) {
+        // 해당 과목이 수강신청에 성공한 과목이라면 각 학생에 대해
+        if (cnt[m] <= L[m]) for (n = 0; n < N; n++) if (bucket[n][m]) {
+            // 학생 n이 과목 m을 수강신청했음을 표시하고
+            reg[n][m] = true;
+            // 학생 n이 수강신청에 성공한 과목 수를 1 늘린다
+            len[n]++;
+        }
+        // 수강신청 성공 여부와는 관계없이 수강제한인원을 cnt만큼 줄인다
+        L[m] -= cnt[m];
+    }
+}
 
-        //각 과목에 대해
-        for (int j = 1; j <= cls_num; j++) 
-            //1차 혹은 2차 수강바구니 때
-            //과목 j를 정상적으로 수강신청 하였다면
-            if(stu[0][i][j] || stu[1][i][j])
-            {
-                //해당 과목을 수강할 것이라고 출력한 뒤
-                printf("%d ", j);
-                //어느 과목을 정상적으로 수강신청 하였다고 표시한다
-                chk = true;
-            }
-        //만일 이 학생의 수강바구니가 터졌다면 "망했어요"를 출력한다
-        if (!chk) printf("망했어요");
-        //개행문자를 출력하여 이 학생에 대한 출력을 끝낸다
-        printf("\n");
+int main() {
+    // 입출력 속도 향상
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    // 문제의 조건을 입력받은 뒤
+    cin >> N >> M;
+    for (int m = 1; m <= M; m++) cin >> L[m];
+
+    // 수강바구니를 두 번 실행
+    for (int T = 0; T < 2; T++) test_case();
+
+    // 각 학생마다
+    for (int n = 0; n < N; n++) {
+        // 수강신청에 성공한 과목이 없다면 "망했어요"를 출력
+        if (!len[n]) cout << "망했어요";
+        // 그렇지 않다면 수강신처엥 성공한 과목을 각각 출력
+        else for (int m = 1; m <= M; m++) if (reg[n][m]) cout << m << ' ';
+        // 개행 문자를 출력해 현재 학생에 대한 출력을 종료
+        cout << '\n';
     }
 
     return 0;
