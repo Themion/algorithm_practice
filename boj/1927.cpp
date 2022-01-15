@@ -6,7 +6,7 @@ using namespace std;
 
 int heap[MAX + 1] = { 0, };
 
-// 힙의 두 인덱스를 받아 값을 swap하고 두 번쨰 인덱스를 반환
+// 힙의 두 인덱스를 받아 값을 swap하고 두 번째 인덱스를 반환
 int swap(int a, int b) {
     int temp = heap[a];
     heap[a] = heap[b];
@@ -30,7 +30,7 @@ int get_child(int parent) {
 int pop() {
     // idx, cmp: swap할 노드의 인덱스, ret: pop할 루트 노드
     int idx = 1, cmp, ret = heap[idx];
-    
+
     // 루트 노드의 값을 마지막 노드로 바꾼 뒤 마지막 노드를 제거
     heap[idx] = heap[heap[0]];
     heap[heap[0]] = 0;
