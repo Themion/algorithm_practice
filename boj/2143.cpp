@@ -3,6 +3,7 @@
 
 using namespace std;
 
+#define MAX_N 1000
 #define SUM_LEN 500500
 
 int A[SUM_LEN], B[SUM_LEN];
@@ -10,7 +11,7 @@ int A[SUM_LEN], B[SUM_LEN];
 // 배열을 입력받아 모든 부분합을 v에 저장
 void make_array(int a[SUM_LEN], int &len) {
     // arr: 배열의 각 성분, size: 배열의 길이
-    int arr[1000] = { 0, }, size;
+    int arr[MAX_N] = { 0, }, size;
 
     // 배열을 입력받은 뒤
     scanf("%d", &size);
