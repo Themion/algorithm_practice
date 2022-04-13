@@ -25,7 +25,7 @@ int main() {
     } while (l || r);
 
     // 0번 좌표를 지나는 선이 존재한다면
-    if (line[0])  {
+    if (line[0]) {
         // 해당 선을 구간을 덮는 첫번째 선으로 지정
         arr[ans++] = line[0];
 
