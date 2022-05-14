@@ -57,7 +57,7 @@ public:
         board b = *this;
 
         // 두 구슬 다 {위쪽, 아래쪽, 왼쪽, 오른쪽}[dir]으로 움직일 수 없다면 return
-        while (b.valid(b.R.next(dir)) <= 0 && b.valid(b.B.next(dir)) <= 0)
+        if (b.valid(b.R.next(dir)) <= 0 && b.valid(b.B.next(dir)) <= 0)
             return;
         // 두 구슬 모두 움직일 수 있을 때
         while (b.valid(b.R.next(dir)) > -1 && b.valid(b.B.next(dir)) > -1 && !red_in) {

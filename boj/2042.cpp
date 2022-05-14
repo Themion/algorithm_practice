@@ -8,16 +8,11 @@ typedef __int64_t ll;
 
 // N: 배열의 크기, M: 배열 갱신 횟수, K: 배열 구간합 연산 횟수
 int N, M, K;
-// array: 배열, fenwick: array의 fenwick tree화
-ll array[LEN + 1] = { 0, }, fenwick[LEN + 1] = { 0, };
+// 입력받은 배열의 fenwick tree화
+ll fenwick[LEN + 1] = { 0, };
 
-// array[idx]를 val로 바꾸며 fenwick도 동시에 갱신
+// 배열의 idx번째 성분을 val만큼 증가
 void set(int idx, ll val) {
-    // 기존값과 갱신값의 차를 계산
-    val -= array[idx];
-    // array 갱신
-    array[idx] += val;
-
     // fenwick 갱신
     while (idx < N) {
         fenwick[idx] += val;
@@ -58,8 +53,8 @@ int main() {
     for (int i = 0; i < M + K; i++) {
         // 명령 입력
         cin >> a >> b >> c;
-        // 명령이 갱신 명령이라면 array[b]를 c로 갱산
-        if (a == 1) set(b, c);
+        // 명령이 갱신 명령이라면 배열의 b번째 성분을 c로 갱신
+        if (a == 1) set(b, c - get(b) + get(b - 1));
         // 명령이 부분합 명령이라면 부분합 [b, c] = [1, c] - [1, b - 1]을 출력
         else cout << get(c) - get(b - 1) << '\n';
     }
