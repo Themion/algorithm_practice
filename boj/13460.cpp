@@ -1,11 +1,21 @@
 #include <cstdio>
 
+typedef unsigned int ui;
+
 #define MAX_N 10
 #define MAX_TILT 10
+#define INF 0xffffffff
 
-int N, M, add[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}}, ans = MAX_TILT + 1;
+class board;
+void tilt(board b, ui cnt);
+void tilt(board b, ui cnt, int dir);
 
-int min(int a, int b) { return a < b ? a : b; }
+// N, M: 보드의 크기, add: 보드의 각 방향으로의 변위
+int N, M, add[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+// 빨간 구슬만 구멍에 넣을 때의 최소 기울임 횟수
+ui ans = INF;
+
+ui min(ui a, ui b) { return a < b ? a : b; }
 
 // 보드의 각 칸을 pair형 클래스로 탐색
 class crd {
@@ -44,71 +54,70 @@ public:
             default: return 1;            
         }
     }
+};
 
-    // 보드를 cnt번째로 기울였을 때 가능한 경우를 모두 탐색
-    void backtrack(int cnt) {
-        if (cnt <= MAX_TILT) for (int d = 0; d < 4; d++) backtrack(cnt, d);
+// 보드 b를 cnt번째로 기울였을 때 가능한 경우를 모두 탐색
+void tilt(board b, ui cnt) { 
+    if (cnt <= MAX_TILT) for (int d = 0; d < 4; d++) tilt(b, cnt, d); 
+}
+// 보드 b를 cnt번째로 기울이고 그 방향이 {위쪽, 아래쪽, 왼쪽, 오른쪽}[dir]일 때
+void tilt(board b, ui cnt, int dir) {
+    // 빨간 구슬이 구멍에 빠졌다면 true, 아니라면 false
+    bool red_in = false;
+
+    // 두 구슬 다 {위쪽, 아래쪽, 왼쪽, 오른쪽}[dir]으로 움직일 수 없다면 return
+    if (b.valid(b.R.next(dir)) <= 0 && b.valid(b.B.next(dir)) <= 0) return;
+    // 두 구슬 모두 움직일 수 있을 때
+    while (b.valid(b.R.next(dir)) > -1 && b.valid(b.B.next(dir)) > -1 && !red_in) {
+        // 두 구슬의 현재 위치를 비운 뒤
+        b[b.R] = b[b.B] = '.';
+        // 좌표를 1 이동시키고
+        b.R = b.R.next(dir);
+        b.B = b.B.next(dir);
+        // 파란 구슬이 구멍에 빠졌다면 return
+        if (b[b.B] == 'O') return;
+        // 빨간 구슬이 구멍에 빠졌다면 red_in에 표시
+        else if (b[b.R] == 'O') red_in = true;
+        // 둘 다 구멍에 빠지지 않았다면 이동시킨 위치에 구슬을 다시 표시
+        else {
+            b[b.B] = 'B';
+            b[b.R] = 'R';
+        }
     }
-    // 보드를 cnt번째로 기울이고 그 방향이 {위쪽, 아래쪽, 왼쪽, 오른쪽}[dir]일 때
-    void backtrack(int cnt, int dir) {
-        // 빨간 구슬이 구멍에 빠졌다면 true, 아니라면 false
-        bool red_in = false;
-        // 현재 상태를 보존하기 위해 만든 새 보드
-        board b = *this;
 
-        // 두 구슬 다 {위쪽, 아래쪽, 왼쪽, 오른쪽}[dir]으로 움직일 수 없다면 return
-        if (b.valid(b.R.next(dir)) <= 0 && b.valid(b.B.next(dir)) <= 0)
-            return;
-        // 두 구슬 모두 움직일 수 있을 때
-        while (b.valid(b.R.next(dir)) > -1 && b.valid(b.B.next(dir)) > -1 && !red_in) {
-            // 두 구슬의 현재 위치를 비운 뒤
-            b[b.R] = b[b.B] = '.';
-            // 좌표를 1 이동시키고
-            b.R = b.R.next(dir);
-            b.B = b.B.next(dir);
-            // 파란 구슬이 구멍에 빠졌다면 return
-            if (b[b.B] == 'O') return;
-            // 빨간 구슬이 구멍에 빠졌다면 red_in에 표시
-            else if (b[b.R] == 'O') red_in = true;
-            // 둘 다 구멍에 빠지지 않았다면 이동시킨 위치에 구슬을 다시 표시
-            else {
-                b[b.B] = 'B';
-                b[b.R] = 'R';
-            }
-        }
+    // 파란 구슬이 움직일 수 있을 때
+    while (b.valid(b.B.next(dir)) == 1) {
+        // 파란 구슬의 현재 위치를 비운 뒤
+        b[b.B] = '.';
+        // 좌표를 1 이동시키고
+        b.B = b.B.next(dir);
 
-        // 파란 구슬이 움직일 수 있을 때
-        while (b.valid(b.B.next(dir)) == 1) {
-            // 파란 구슬의 현재 위치를 비운 뒤
-            b[b.B] = '.';
-            // 좌표를 1 이동시키고
-            b.B = b.B.next(dir);
-
-            // 파란 구슬이 구멍에 빠졌다면 return
-            if (b[b.B] == 'O') return;
-            // 구멍에 빠지지 않았다면 이동시킨 위치에 구슬을 다시 표시
-            else b[b.B] = 'B';
-        }
-
-        while (b.valid(b.R.next(dir)) == 1 && !red_in) {
-            b[b.R] = '.';
-            // 좌표를 1 이동시키고
-            b.R = b.R.next(dir);
-
-            // 빨간 구슬이 구멍에 빠졌다면 red_in에 표시
-            if (b[b.R] == 'O') red_in = true;
-            // 구멍에 빠지지 않았다면 이동시킨 위치에 구슬을 다시 표시
-            else b[b.R] = 'R';
-        }
-
-        // 빨간 구슬이 구멍에 빠졌다면 보드를 기울이는 최소 횟수를 갱신
-        if (red_in) ans = min(ans, cnt);
-        // 그렇지 않다면 두 구슬 다 움직일 수 있으므로 보드를 다시 한 번 기울인다
-        else b.backtrack(cnt + 1);
+        // 파란 구슬이 구멍에 빠졌다면 return
+        if (b[b.B] == 'O') return;
+        // 구멍에 빠지지 않았다면 이동시킨 위치에 구슬을 다시 표시
+        else b[b.B] = 'B';
     }
-} brd;
+
+    while (b.valid(b.R.next(dir)) == 1 && !red_in) {
+        b[b.R] = '.';
+        // 좌표를 1 이동시키고
+        b.R = b.R.next(dir);
+
+        // 빨간 구슬이 구멍에 빠졌다면 red_in에 표시
+        if (b[b.R] == 'O') red_in = true;
+        // 구멍에 빠지지 않았다면 이동시킨 위치에 구슬을 다시 표시
+        else b[b.R] = 'R';
+    }
+
+    // 빨간 구슬이 구멍에 빠졌다면 보드를 기울이는 최소 횟수를 갱신
+    if (red_in) ans = min(ans, cnt);
+    // 그렇지 않다면 두 구슬 다 움직일 수 있으므로 보드를 다시 한 번 기울인다
+    else tilt(b, cnt + 1);
+}
 
 int main() {
+    board brd;
+
     // 문제의 조건을 입력받으며 두 구슬과 구멍의 위치를 저장
     scanf("%d %d", &N, &M);
     for (int y = 0; y < N; y++) {
@@ -122,9 +131,9 @@ int main() {
     }
 
     // 보드를 이리저리 기울이며 모든 경우를 시험해본 뒤
-    brd.backtrack(1);
+    tilt(brd, 1);
     // 빨간 구슬만 구멍에 넣을 수 있다면 기울이는 최소 횟수를, 그렇지 않다면 -1을 출력
-    printf("%d\n", ans <= MAX_TILT ? ans : -1);
+    printf("%d\n", ans);
 
     return 0;
 }

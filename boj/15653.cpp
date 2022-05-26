@@ -4,6 +4,9 @@ typedef unsigned int ui;
 
 #define MAX_N 10
 #define INF 0xffffffff
+
+#define FOR(k, K) for(int k = 0; k < K; k++)
+// 보드의 상태에 따라 visit을 조회
 #define state(b) visit[b.R.y][b.R.x][b.B.y][b.B.x]
 
 class board;
@@ -56,7 +59,7 @@ public:
 };
 
 // 보드 b를 cnt번째로 기울였을 때 가능한 경우를 모두 탐색
-void tilt(board b, ui cnt) { for (int d = 0; d < 4; d++) tilt(b, cnt, d); }
+void tilt(board b, ui cnt) { FOR(d, 4) tilt(b, cnt, d); }
 // 보드 b를 cnt번째로 기울이고 그 방향이 {위쪽, 아래쪽, 왼쪽, 오른쪽}[dir]일 때
 void tilt(board b, ui cnt, int dir) {
     // 빨간 구슬이 구멍에 빠졌다면 true, 아니라면 false
@@ -122,9 +125,9 @@ int main() {
 
     // 문제의 조건을 입력받으며 두 구슬과 구멍의 위치를 저장
     scanf("%d %d", &N, &M);
-    for (int y = 0; y < N; y++) {
+    FOR(y, N) {
         scanf("%*c");
-        for (int x = 0; x < M; x++) {
+        FOR(x, M) {
             scanf("%c", &brd[y][x]);
             if      (brd[y][x] == 'B') brd.B = { y, x };
             else if (brd[y][x] == 'R') brd.R = { y, x };
@@ -133,9 +136,7 @@ int main() {
     }
 
     // 모든 상태의 기울임 횟수를 INF로 지정
-    for (int a = 0; a < MAX_N; a++) for (int b = 0; b < MAX_N; b++)
-        for (int c = 0; c < MAX_N; c++) for (int d = 0; d < MAX_N; d++)
-            visit[a][b][c][d] = INF;
+    FOR(a, MAX_N) FOR(b, MAX_N) FOR(c, MAX_N) FOR(d, MAX_N) visit[a][b][c][d] = INF;
 
     // 보드를 이리저리 기울이며 모든 경우를 시험해본 뒤
     tilt(brd, 1);
