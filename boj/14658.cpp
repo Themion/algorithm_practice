@@ -1,7 +1,5 @@
 #include <cstdio>
 
-#define MAX_N 500000
-#define MAX_L 100000
 #define MAX_K 100
 
 // N, M: 별똥별이 떨어지는 공간의 크기, L: 정사각형 트램펄린의 한 변의 길이
