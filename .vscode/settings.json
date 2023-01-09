@@ -2,6 +2,8 @@
     "files.associations": {
         "*.cpp": "cpp",
         "*.vue": "html",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "random": "cpp",
+        "limits": "cpp"
     }
 }
