@@ -4,6 +4,7 @@
         "*.vue": "html",
         "iostream": "cpp",
         "random": "cpp",
-        "limits": "cpp"
+        "limits": "cpp",
+        "type_traits": "cpp"
     }
 }
