@@ -1,7 +1,7 @@
 {
     "configurations": [
         {
-            "name": "C/C++: g++ 활성 파일 빌드 및 디버그",
+            "name": "C/C++",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/a.out",
@@ -25,6 +25,13 @@
             ],
             "preLaunchTask": "C/C++: g++ 활성 파일 빌드",
             "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "Node.js",
+            "type": "node",
+            "request": "launch",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${file}"
         }
     ],
     "version": "2.0.0"
