@@ -5,11 +5,7 @@ class Solution {
   private Integer transformCount = 0;
 
   private String binaryTransform(String s) {
-    Integer count = 0;
-    char[] arr = s.toCharArray();
-    for (char c : arr)
-      if (c == '1')
-        count++;
+    Integer count = s.replaceAll("0", "").length();
 
     removedZero += s.length() - count;
     transformCount++;
@@ -18,9 +14,8 @@ class Solution {
   }
 
   public int[] solution(String s) {
-    do {
+    while (!s.equals("1"))
       s = this.binaryTransform(s);
-    } while (!s.equals("1"));
 
     int[] answer = { this.transformCount, this.removedZero };
 
