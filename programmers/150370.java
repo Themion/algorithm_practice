@@ -31,8 +31,8 @@ class Date {
     }
   }
 
-  Boolean isAfterThanOrEqual(Date d) {
-    return this.toInteger() >= d.toInteger();
+  Boolean isBiggerThan(Date d) {
+    return this.toInteger() > d.toInteger();
   }
 }
 
@@ -54,7 +54,7 @@ class Solution {
 
       termDate.addMonth(termMap.getOrDefault(term, 0));
 
-      if (todayAsDate.isAfterThanOrEqual(termDate))
+      if (todayAsDate.isBiggerThan(termDate))
         answer.add(i + 1);
     }
 
