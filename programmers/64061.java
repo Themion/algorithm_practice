@@ -4,7 +4,6 @@ import java.util.Stack;
 
 class Solution {
   public int solution(int[][] board, int[] moves) {
-
     int depth = board.length, answer = 0;
     int[] pos = new int[board[0].length];
     Stack<Integer> stack = new Stack<>();

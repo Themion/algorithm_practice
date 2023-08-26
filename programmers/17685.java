@@ -1,3 +1,5 @@
+package programmers;
+
 class Trie {
   static int MAX_LEN = 1000000;
   static int EOW = 26;

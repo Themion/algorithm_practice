@@ -11,12 +11,13 @@ class Heap {
   void orderUp(int index) {
     if (index == 0)
       return;
-    if (heap[index] < heap[index / 2] == isMinHeap) {
+    int parent = (index - 1) / 2;
+    if (heap[index] < heap[parent] == isMinHeap) {
       int temp = heap[index];
-      heap[index] = heap[index / 2];
-      heap[index / 2] = temp;
+      heap[index] = heap[parent];
+      heap[parent] = temp;
 
-      orderUp(index / 2);
+      orderUp(parent);
     }
   }
 
